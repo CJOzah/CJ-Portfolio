@@ -1,4 +1,4 @@
-// @dart=2.9
+
 
 import 'package:canaan_portfolio/github_api.dart';
 import 'package:canaan_portfolio/screens/home.dart';

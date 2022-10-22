@@ -1,5 +1,7 @@
 // ignore_for_file: unused_local_variable
 
+import 'dart:developer';
+
 import 'package:canaan_portfolio/constants.dart';
 import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
 import 'package:canaan_portfolio/size_config.dart';
@@ -49,32 +51,11 @@ class _AboutScreenState extends State<AboutScreen> {
                           margin: EdgeInsets.only(top: 10),
                           height: 500,
                           decoration: BoxDecoration(
-                            boxShadow: ThemeProvider().isDarkMode
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      spreadRadius: 1,
-                                      blurRadius: 10,
-                                      offset: Offset(
-                                          2, 2), // changes position of shadow
-                                    )
-                                  ]
-                                : [],
-                            gradient: !ThemeProvider().isDarkMode
-                                ? LinearGradient(
+                            gradient:LinearGradient(
                                     colors: [
                                       Colors.white,
                                       Colors.white,
                                       Colors.white,
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  )
-                                : LinearGradient(
-                                    colors: [
-                                      Color(0xff14181E),
-                                      Color(0xff272B30),
-                                      Color(0xff21252A),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -135,7 +116,11 @@ class _AboutScreenState extends State<AboutScreen> {
                                         Provider.of<GithubRepos>(context,
                                                 listen: true)
                                             .getGithubRepo()[0]
-                                            .description!),
+                                            .description == null ? "" :  Provider.of<GithubRepos>(context,
+                                                listen: true)
+                                            .getGithubRepo()[0]
+                                            .description!
+                                            ),
                                     textAlign: textAlignment,
                                     style:
                                         Theme.of(context).textTheme.bodyText1!),
@@ -148,12 +133,21 @@ class _AboutScreenState extends State<AboutScreen> {
                                           context,
                                           listen: false)
                                       .getGithubRepo()[0]
-                                      .description!));
+                                      .description == null ? "" : Provider.of<GithubRepos>(
+                                          context,
+                                          listen: false)
+                                      .getGithubRepo()[0]
+                                      .description!
+                                      ));
                                   launchInBrowser(Uri.parse(getFirstWord(
                                       Provider.of<GithubRepos>(context,
                                               listen: false)
                                           .getGithubRepo()[0]
-                                          .description!)));
+                                          .description == null ? "" : Provider.of<GithubRepos>(
+                                          context,
+                                          listen: false)
+                                      .getGithubRepo()[0]
+                                      .description!)));
                                   debugPrint("url launched");
                                 },
                                 child: Text(
@@ -260,7 +254,11 @@ class _AboutScreenState extends State<AboutScreen> {
                                         Provider.of<GithubRepos>(context,
                                                 listen: true)
                                             .getGithubRepo()[0]
-                                            .description!),
+                                            .description == null ? "" : Provider.of<GithubRepos>(
+                                          context,
+                                          listen: true)
+                                      .getGithubRepo()[0]
+                                      .description!),
                                     textAlign: textAlignment,
                                     style:
                                         Theme.of(context).textTheme.bodyText1!),

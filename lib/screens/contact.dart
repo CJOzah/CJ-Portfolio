@@ -5,9 +5,9 @@ import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
 import 'package:canaan_portfolio/size_config.dart';
 import 'package:canaan_portfolio/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svprogresshud/flutter_svprogresshud.dart';
+// import 'package:flutter_svprogresshud/flutter_svprogresshud.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mailgun/mailgun.dart';
+// import 'package:mailgun/mailgun.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import '../random_moving_shapes.dart';
@@ -40,14 +40,14 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   void initState() {
-    SVProgressHUD.dismiss();
+    // SVProgressHUD.dismiss();
     super.initState();
   }
 
-  var mailgun = MailgunMailer(
-      domain:
-          "api.mailgun.net/v3/sandbox17d1a892a8114788abdd98b7336e0ffd.mailgun.org/messages",
-      apiKey: "c849b01b2311f5dd277e228cfb630aed-523596d9-73f1351f");
+  // var mailgun = MailgunMailer(
+  //     domain:
+  //         "api.mailgun.net/v3/sandbox17d1a892a8114788abdd98b7336e0ffd.mailgun.org/messages",
+  //     apiKey: "c849b01b2311f5dd277e228cfb630aed-523596d9-73f1351f");
 
   contactMe(
       {required String? to,
@@ -56,23 +56,23 @@ class _ContactScreenState extends State<ContactScreen> {
       required String? from,
       Function(String)? cb,
       Function(String)? data}) async {
-    var mailgun = MailgunMailer(
-        domain: "sandbox17d1a892a8114788abdd98b7336e0ffd.mailgun.org",
-        apiKey: "c849b01b2311f5dd277e228cfb630aed-523596d9-73f1351f");
+    // var mailgun = MailgunMailer(
+    //     domain: "sandbox17d1a892a8114788abdd98b7336e0ffd.mailgun.org",
+    //     apiKey: "c849b01b2311f5dd277e228cfb630aed-523596d9-73f1351f");
 
-    try {
-      cb!("loading");
-      var response = await mailgun
-          .send(from: from, to: [to!], subject: subject, text: text)
-          .whenComplete(() {
-        data!("");
-        SVProgressHUD.dismiss();
-      });
-    } catch (e) {
-      SVProgressHUD.dismiss();
-      cb!("failed to send email");
-      debugPrint("$e");
-    }
+    // try {
+    //   cb!("loading");
+    //   var response = await mailgun
+    //       .send(from: from, to: [to!], subject: subject, text: text)
+    //       .whenComplete(() {
+    //     data!("");
+    //     SVProgressHUD.dismiss();
+    //   });
+    // } catch (e) {
+    //   SVProgressHUD.dismiss();
+    //   cb!("failed to send email");
+    //   debugPrint("$e");
+    // }
   }
 
   @override
@@ -272,41 +272,41 @@ class _ContactScreenState extends State<ContactScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    if (name.isEmpty ||
-                                        phone.isEmpty ||
-                                        text.isEmpty ||
-                                        email.isEmpty) {
-                                      _showMessage(errorMessage);
-                                    } else {
-                                      await contactMe(
-                                          cb: ((cb) {
-                                            if (cb == "loading") {
-                                              SVProgressHUD.show(
-                                                  status: "Loading");
-                                              debugPrint(
-                                                  "Loading...............................");
-                                            }
-                                            if (cb == "failed") {
-                                              SVProgressHUD.dismiss();
-                                              debugPrint(
-                                                  "failed..........................");
-                                              _showMessage(
-                                                  "Error occured, try again");
-                                            }
-                                          }),
-                                          data: ((data) {
-                                            SVProgressHUD.dismiss();
-                                            debugPrint(
-                                                "Successful.....................................");
+                                    // if (name.isEmpty ||
+                                    //     phone.isEmpty ||
+                                    //     text.isEmpty ||
+                                    //     email.isEmpty) {
+                                    //   _showMessage(errorMessage);
+                                    // } else {
+                                    //   await contactMe(
+                                    //       cb: ((cb) {
+                                    //         if (cb == "loading") {
+                                    //           SVProgressHUD.show(
+                                    //               status: "Loading");
+                                    //           debugPrint(
+                                    //               "Loading...............................");
+                                    //         }
+                                    //         if (cb == "failed") {
+                                    //           SVProgressHUD.dismiss();
+                                    //           debugPrint(
+                                    //               "failed..........................");
+                                    //           _showMessage(
+                                    //               "Error occured, try again");
+                                    //         }
+                                    //       }),
+                                    //       data: ((data) {
+                                    //         SVProgressHUD.dismiss();
+                                    //         debugPrint(
+                                    //             "Successful.....................................");
 
-                                            _showMessage("Mail sent");
-                                          }),
-                                          to: "bdiamondozah@gmail.com",
-                                          text:
-                                              "$text with phone number: $phone",
-                                          subject: name,
-                                          from: email);
-                                    }
+                                    //         _showMessage("Mail sent");
+                                    //       }),
+                                    //       to: "bdiamondozah@gmail.com",
+                                    //       text:
+                                    //           "$text with phone number: $phone",
+                                    //       subject: name,
+                                    //       from: email);
+                                    // }
 
                                     // SVProgressHUD.dismiss();
                                   },
@@ -457,41 +457,41 @@ class _ContactScreenState extends State<ContactScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    if (name.isEmpty ||
-                                        phone.isEmpty ||
-                                        text.isEmpty ||
-                                        email.isEmpty) {
-                                      _showMessage(errorMessage);
-                                    } else {
-                                      await contactMe(
-                                          cb: ((cb) {
-                                            if (cb == "loading") {
-                                              SVProgressHUD.show(
-                                                  status: "Loading");
-                                              debugPrint(
-                                                  "Loading...............................");
-                                            }
-                                            if (cb == "failed") {
-                                              SVProgressHUD.dismiss();
-                                              debugPrint(
-                                                  "failed..........................");
-                                              _showMessage(
-                                                  "Error occured, try again");
-                                            }
-                                          }),
-                                          data: ((data) {
-                                            SVProgressHUD.dismiss();
-                                            debugPrint(
-                                                "Successful.....................................");
+                                    // if (name.isEmpty ||
+                                    //     phone.isEmpty ||
+                                    //     text.isEmpty ||
+                                    //     email.isEmpty) {
+                                    //   _showMessage(errorMessage);
+                                    // } else {
+                                    //   await contactMe(
+                                    //       cb: ((cb) {
+                                    //         if (cb == "loading") {
+                                    //           SVProgressHUD.show(
+                                    //               status: "Loading");
+                                    //           debugPrint(
+                                    //               "Loading...............................");
+                                    //         }
+                                    //         if (cb == "failed") {
+                                    //           SVProgressHUD.dismiss();
+                                    //           debugPrint(
+                                    //               "failed..........................");
+                                    //           _showMessage(
+                                    //               "Error occured, try again");
+                                    //         }
+                                    //       }),
+                                    //       data: ((data) {
+                                    //         SVProgressHUD.dismiss();
+                                    //         debugPrint(
+                                    //             "Successful.....................................");
 
-                                            _showMessage("Mail sent");
-                                          }),
-                                          to: "bdiamondozah@gmail.com",
-                                          text:
-                                              "$text with phone number: $phone",
-                                          subject: name,
-                                          from: email);
-                                    }
+                                    //         _showMessage("Mail sent");
+                                    //       }),
+                                    //       to: "bdiamondozah@gmail.com",
+                                    //       text:
+                                    //           "$text with phone number: $phone",
+                                    //       subject: name,
+                                    //       from: email);
+                                    // }
 
                                     // SVProgressHUD.dismiss();
                                   },

@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 
 class GithubRepos extends ChangeNotifier {
   List<GithubRepo> githubRepo = [];
-  //Checks if user BVN already exists
   getGithubRepos() async {
     // bool result = await InternetConnectionChecker().hasConnection;
 

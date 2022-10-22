@@ -10,7 +10,7 @@ class HomeContentDesktop extends StatefulWidget {
 class _HomeContentDesktopState extends State<HomeContentDesktop> {
   List<Widget> myWidgets = [
     HomePage(),
-    AboutScreen(),
+    // AboutScreen(),
   ];
 
 
@@ -19,7 +19,7 @@ class _HomeContentDesktopState extends State<HomeContentDesktop> {
     return Column(
       children: [
         HomePage(),
-        AboutScreen(),
+        // AboutScreen(),
       ],
     );
   }
