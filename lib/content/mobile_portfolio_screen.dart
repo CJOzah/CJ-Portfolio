@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../constants.dart';
 import '../github_api.dart';
 import '../random_moving_shapes.dart';
@@ -6,8 +8,10 @@ import 'package:provider/provider.dart';
 import 'package:canaan_portfolio/size_config.dart';
 import 'package:canaan_portfolio/github_model.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+
 // ignore_for_file: unused_local_variable
 
 
@@ -62,6 +66,16 @@ class _MobilePortfolioScreenState extends State<MobilePortfolioScreen> {
                         ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    "Tap on the cards to reveal project description",
+                    style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                          color: Theme.of(context).dividerColor,
+                          fontSize: 12
+                        ),
+                  ),
+                ),
                 SizedBox(
                   height: 50,
                 ),
@@ -104,7 +118,7 @@ class _MobilePortfolioScreenState extends State<MobilePortfolioScreen> {
                                     ? "No Description"
                                     : githubRepo.description!,
                                 heading: githubRepo.name == null
-                                    ? "No Description"
+                                    ? "No name"
                                     : githubRepo.name!,
                                 url: "${githubRepo.htmlUrl}",
                               );
@@ -371,6 +385,7 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final containerColor = color;
 
+log("${getFirstWord(widget.title)}");
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -421,7 +436,7 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
           image: showImage == false
               ? DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(
+                  image: CachedNetworkImageProvider(
                     "${getFirstWord(widget.title)}",
                   ))
               : null,

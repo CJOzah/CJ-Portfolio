@@ -1,15 +1,15 @@
-// ignore_for_file: unused_local_variable, import_of_legacy_library_into_null_safe
-
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:canaan_portfolio/size_config.dart';
 import 'package:canaan_portfolio/theme/theme_provider.dart';
-import 'package:flutter/material.dart';
-// import 'package:flutter_svprogresshud/flutter_svprogresshud.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:mailgun/mailgun.dart';
-import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import '../random_moving_shapes.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+// ignore_for_file: unused_local_variable, import_of_legacy_library_into_null_safe
+
+// import 'package:flutter_svprogresshud/flutter_svprogresshud.dart';
+// import 'package:mailgun/mailgun.dart';
 
 class MobileContactScreen extends StatefulWidget {
   const MobileContactScreen({Key? key}) : super(key: key);
@@ -349,12 +349,13 @@ class _MobileContactScreenState extends State<MobileContactScreen> {
           Container(
             padding: EdgeInsets.all(4),
             width: double.infinity,
-            color: Theme.of(context).primaryColorDark,
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: Center(
               child: Text(
-                "copyright",
+                "Copyright CJ 2024",
                 style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: Colors.white,
+                      fontSize: 14
                     ),
               ),
             ),

@@ -19,7 +19,7 @@ class MyThemes {
     backgroundColor: Color(0xff17122A),
     primaryColor: Color(0xFF000C66),
     primaryColorDark: Color(0xFF050A30),
-    primaryColorLight: Color(0xFFF0A904), 
+    primaryColorLight: Color(0xFF1D4788),
     secondaryHeaderColor: Color(0xFFD21D5B), 
     dividerColor: Colors.grey,
     textTheme: TextTheme().copyWith(
@@ -73,8 +73,8 @@ class MyThemes {
     backgroundColor: Color(0xFFffffff),
     primaryColor: Color(0xFF000C66),
     primaryColorDark: Color(0xFF050A30),
-    primaryColorLight: Color(0xFFF0A904).withOpacity(0.5), 
-    secondaryHeaderColor: Color(0xFFF0A904).withOpacity(0.5), 
+    primaryColorLight: Color(0xFF0000FF),
+    secondaryHeaderColor: Color(0xFFF0A904), 
     dividerColor: Color(0xFFFFFFFF),
     textTheme: TextTheme().copyWith(
       bodyText1: TextStyle(color: Colors.black, fontSize: 16.0, height: 1.5),
