@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import '../constants.dart';
 import '../github_api.dart';
 import '../random_moving_shapes.dart';
@@ -11,6 +10,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+
 
 // ignore_for_file: unused_local_variable
 
@@ -384,8 +384,7 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final containerColor = color;
-
-log("${getFirstWord(widget.title)}");
+ 
     return GestureDetector(
       onTap: () {
         setState(() {
