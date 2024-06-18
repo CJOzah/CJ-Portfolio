@@ -1,16 +1,16 @@
-// ignore_for_file: unused_local_variable
-
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/github_model.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-
 import '../constants.dart';
 import '../github_api.dart';
 import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/github_model.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+// ignore_for_file: unused_local_variable
+
+
 
 class MobilePortfolioScreen extends StatefulWidget {
   const MobilePortfolioScreen({Key? key}) : super(key: key);
@@ -509,12 +509,17 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
                           Theme.of(context).primaryColorLight.withOpacity(0.8),
                         ]),
                       ),
-                      child: Text(
-                        "View Project",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .copyWith(color: Colors.white),
+                      child: InkWell(
+                        onTap: () {
+                           launchInBrowser(Uri.parse(widget.url!));
+                        },
+                        child: Text(
+                          "View Project",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),

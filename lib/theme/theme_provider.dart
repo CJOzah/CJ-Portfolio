@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 // ignore_for_file: deprecated_member_use
 
-import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.light;
@@ -19,9 +19,8 @@ class MyThemes {
     backgroundColor: Color(0xff17122A),
     primaryColor: Color(0xFF000C66),
     primaryColorDark: Color(0xFF050A30),
-    primaryColorLight: Color(0xFF1D4788),
-    secondaryHeaderColor: Color(0xFFD21D5B),
-    accentColor: Color(0xFF48BCE1),
+    primaryColorLight: Color(0xFFF0A904), 
+    secondaryHeaderColor: Color(0xFFD21D5B), 
     dividerColor: Colors.grey,
     textTheme: TextTheme().copyWith(
       bodyText1: TextStyle(
@@ -65,8 +64,7 @@ class MyThemes {
         ),
       ),
     ),
-    colorScheme: ColorScheme.dark(),
-    accentIconTheme: IconThemeData(color: Colors.white, opacity: 0.8, size: 24),
+    colorScheme: ColorScheme.dark(), 
     iconTheme: IconThemeData(color: Colors.white, opacity: 0.8, size: 24),
   );
 
@@ -75,9 +73,8 @@ class MyThemes {
     backgroundColor: Color(0xFFffffff),
     primaryColor: Color(0xFF000C66),
     primaryColorDark: Color(0xFF050A30),
-    primaryColorLight: Color(0xFF0000FF),
-    secondaryHeaderColor: Color(0xFFF0A904),
-    accentColor: Color(0xFF48BCE1),
+    primaryColorLight: Color(0xFFF0A904).withOpacity(0.5), 
+    secondaryHeaderColor: Color(0xFFF0A904).withOpacity(0.5), 
     dividerColor: Color(0xFFFFFFFF),
     textTheme: TextTheme().copyWith(
       bodyText1: TextStyle(color: Colors.black, fontSize: 16.0, height: 1.5),
@@ -119,8 +116,7 @@ class MyThemes {
         shadowColor: MaterialStateProperty.all<Color>(Color(0xFF0000FF)),
       ),
     ),
-    colorScheme: ColorScheme.light(),
-    accentIconTheme: IconThemeData(color: Colors.black, opacity: 0.8, size: 24),
+    colorScheme: ColorScheme.light(), 
     iconTheme: IconThemeData(color: Colors.black, opacity: 0.8, size: 24),
   );
 }

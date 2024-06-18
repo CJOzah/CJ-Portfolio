@@ -1,14 +1,14 @@
-// ignore_for_file: unused_local_variable
-
-import 'package:canaan_portfolio/constants.dart';
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-
 import '../github_api.dart';
 import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:canaan_portfolio/constants.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+// ignore_for_file: unused_local_variable
+
+
 
 class MobileAboutScreen extends StatefulWidget {
   const MobileAboutScreen({Key? key}) : super(key: key);
@@ -79,7 +79,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen> {
                                       context,
                                       listen: true)
                                   .getGithubRepo()[0]
-                                  .description!),
+                                  .description ?? ""),
                               textAlign: textAlignment,
                               style: Theme.of(context).textTheme.bodyText1!),
                       SizedBox(

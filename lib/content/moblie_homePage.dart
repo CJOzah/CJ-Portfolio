@@ -1,10 +1,10 @@
+import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
 // ignore_for_file: unused_local_variable
 
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:flutter/material.dart';
 
-import '../random_moving_shapes.dart';
 
 class MobileHomePage extends StatefulWidget {
   const MobileHomePage({Key? key}) : super(key: key);
@@ -60,7 +60,7 @@ class _MobileHomePageState extends State<MobileHomePage>   {
                                   ),
                         ),
                         Text(
-                          "I'm Canaan",
+                          "I'm CJ",
                           style:
                               Theme.of(context).textTheme.headline3!.copyWith(
                                     color: Theme.of(context).primaryColorLight,

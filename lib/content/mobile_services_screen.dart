@@ -1,11 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/random_moving_shapes.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
 // ignore_for_file: unused_local_variable
 
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/random_moving_shapes.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 
 class MobileServicesScreen extends StatefulWidget {
   const MobileServicesScreen({Key? key}) : super(key: key);
@@ -481,7 +481,7 @@ class _FancyCardSmallMobileState extends State<FancyCardSmallMobile> {
                   : 80
               : isExpanded
                   ? 130
-                  : 140,
+                  : 160,
           margin: EdgeInsets.only(left: 15, right: 15),
           decoration: BoxDecoration(
             color: widget.color,
@@ -515,8 +515,8 @@ class _FancyCardSmallMobileState extends State<FancyCardSmallMobile> {
                           ? 65
                           : 70
                       : isExpanded
-                          ? 120
-                          : 130,
+                          ? 130
+                          : 150,
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: const BorderRadius.all(
