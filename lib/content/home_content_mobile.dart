@@ -39,7 +39,7 @@ class ToolbarItem extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 10,
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                   ),
                 ],
               ),
@@ -197,12 +197,12 @@ class _CoolToolbarState extends State<CoolToolbar>
               width: Constants.toolbarWidth,
               decoration: BoxDecoration(
                 color:
-                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
+                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 20,
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                   ),
                 ],
               ),

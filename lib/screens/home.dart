@@ -33,8 +33,27 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   final PageController pageController = PageController();
   final ScrollController mobileController = ScrollController();
+  final GlobalKey _homeSectionKey = GlobalKey();
+  final GlobalKey _aboutSectionKey = GlobalKey();
+  final GlobalKey _servicesSectionKey = GlobalKey();
+  final GlobalKey _portfolioSectionKey = GlobalKey();
+  final GlobalKey _contactSectionKey = GlobalKey();
    AnimationController? _drawerController;
   double drawerOffset = 0;
+
+  /// Scrolls the desktop/tablet ListView to the exact section.
+  void _scrollToSection(GlobalKey sectionKey) {
+    final BuildContext? sectionContext = sectionKey.currentContext;
+    if (sectionContext == null) {
+      return;
+    }
+    Scrollable.ensureVisible(
+      sectionContext,
+      duration: Duration(milliseconds: 1200),
+      curve: Curves.easeInOut,
+      alignment: 0.02,
+    );
+  }
 
   @override
   void initState() {
@@ -82,6 +101,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
     return ResponsiveBuilder(
       builder: (context, sizingInformation) => Scaffold(
+        backgroundColor:   const Color(0xFF042840),
         drawer: sizingInformation.deviceScreenType == DeviceScreenType.mobile
             ? NavigationDrawer()
             : null,
@@ -116,10 +136,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 NavBarItem(
                                     text: "Home",
                                     function: () {
-                                      pageController.animateTo(SizeConfig.sH!,
-                                          duration:
-                                              Duration(milliseconds: 1500),
-                                          curve: Curves.easeIn);
+                                      _scrollToSection(_homeSectionKey);
                                     }
                                     //=> Scrollable.ensureVisible(
                                     //     dataKey!.currentContext!,
@@ -132,13 +149,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 NavBarItem(
                                     text: "About",
                                     function: () {
-                                      pageController.animateTo(
-                                          sizingInformation.isDesktop
-                                              ? SizeConfig.sH! * 90
-                                              : SizeConfig.sH! * 150,
-                                          duration:
-                                              Duration(milliseconds: 1500),
-                                          curve: Curves.easeIn);
+                                      _scrollToSection(_aboutSectionKey);
                                     }
                                     // => Scrollable.ensureVisible(
                                     //     dataKey1!.currentContext!,
@@ -151,13 +162,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 NavBarItem(
                                     text: "Services",
                                     function: () {
-                                      pageController.animateTo(
-                                          sizingInformation.isDesktop
-                                              ? SizeConfig.sH! * 170
-                                              : SizeConfig.sH! * 280,
-                                          duration:
-                                              Duration(milliseconds: 1500),
-                                          curve: Curves.easeIn);
+                                      _scrollToSection(_servicesSectionKey);
                                     }
                                     // => Scrollable.ensureVisible(
                                     //     dataKey2!.currentContext!,
@@ -170,13 +175,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 NavBarItem(
                                     text: "Portfolio",
                                     function: () {
-                                      pageController.animateTo(
-                                          sizingInformation.isDesktop
-                                              ? SizeConfig.sH! * 320
-                                              : SizeConfig.sH! * 640,
-                                          duration:
-                                              Duration(milliseconds: 1500),
-                                          curve: Curves.easeIn);
+                                      _scrollToSection(_portfolioSectionKey);
                                     }
                                     //=> Scrollable.ensureVisible(
                                     //     dataKey3!.currentContext!,
@@ -189,13 +188,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 NavBarItem(
                                     text: "Contact",
                                     function: () {
-                                      pageController.animateTo(
-                                          sizingInformation.isDesktop
-                                              ? SizeConfig.sH! * 520
-                                              : SizeConfig.sH! * 870,
-                                          duration:
-                                              Duration(milliseconds: 1500),
-                                          curve: Curves.easeIn);
+                                      _scrollToSection(_contactSectionKey);
                                     }
                                     // => Scrollable.ensureVisible(
                                     //     dataKey4!.currentContext!,
@@ -207,12 +200,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             // if (!sizingInformation.isTablet)
                             ElevatedButton(
                               onPressed: () {
-                                pageController.animateTo(
-                                    sizingInformation.isDesktop
-                                        ? SizeConfig.sH! * 520
-                                        : SizeConfig.sH! * 870,
-                                    duration: Duration(milliseconds: 1500),
-                                    curve: Curves.easeIn);
+                                _scrollToSection(_contactSectionKey);
                               },
                               //  => Scrollable.ensureVisible(
                               //     dataKey4!.currentContext!,
@@ -230,7 +218,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         body: Stack(
           children: [
             Container(
-              color: Colors.transparent,
+              color: const Color(0xFF042840),
               margin: EdgeInsets.only(
                 top: SizeConfig.sW! * 1,
                 bottom: SizeConfig.sW! * 1,
@@ -275,56 +263,88 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   ),
                 ),
                 tablet: SizedBox(
-                  child: ListView(
+                  child: SingleChildScrollView(
                     controller: pageController,
-                    scrollDirection: Axis.vertical,
-                    children: [
+                    child: Column(
+                      children: [
                       FadeInLeft(
                           duration: Duration(milliseconds: 1500),
-                          child: HomePage()),
+                          child: Container(
+                            key: _homeSectionKey,
+                            child: HomePage(),
+                          )),
                       FadeInRight(
                         duration: Duration(milliseconds: 2500),
-                        child: AboutScreen(),
+                        child: Container(
+                          key: _aboutSectionKey,
+                          child: AboutScreen(),
+                        ),
                       ),
                       FadeInLeft(
                         duration: Duration(milliseconds: 2500),
-                        child: ServicesPageDesktopTab(),
+                        child: Container(
+                          key: _servicesSectionKey,
+                          child: ServicesPageDesktopTab(),
+                        ),
                       ),
                       FadeInRight(
                         duration: Duration(milliseconds: 2500),
-                        child: PortfolioScreen(),
+                        child: Container(
+                          key: _portfolioSectionKey,
+                          child: PortfolioScreen(),
+                        ),
                       ),
                       FadeInLeft(
                         duration: Duration(milliseconds: 2500),
-                        child: ContactScreen(),
+                        child: Container(
+                          key: _contactSectionKey,
+                          child: ContactScreen(),
+                        ),
                       ),
                     ],
+                    ),
                   ),
                 ),
-                desktop: ListView(
+                desktop: SingleChildScrollView(
                   controller: pageController,
-                  scrollDirection: Axis.vertical,
-                  children: [
+                  child: Column(
+                    children: [
                     FadeInLeftBig(
                         duration: Duration(milliseconds: 1500),
-                        child: HomePage()),
+                        child: Container(
+                          key: _homeSectionKey,
+                          child: HomePage(),
+                        )),
                     FadeInRightBig(
                       duration: Duration(milliseconds: 2500),
-                      child: AboutScreen(),
+                      child: Container(
+                        key: _aboutSectionKey,
+                        child: AboutScreen(),
+                      ),
                     ),
                     FadeInLeftBig(
                       duration: Duration(milliseconds: 2500),
-                      child: ServicesPageDesktopTab(),
+                      child: Container(
+                        key: _servicesSectionKey,
+                        child: ServicesPageDesktopTab(),
+                      ),
                     ),
                     FadeInRightBig(
                       duration: Duration(milliseconds: 2500),
-                      child: PortfolioScreen(),
+                      child: Container(
+                        key: _portfolioSectionKey,
+                        child: PortfolioScreen(),
+                      ),
                     ),
                     FadeInLeftBig(
                       duration: Duration(milliseconds: 2500),
-                      child: ContactScreen(),
+                      child: Container(
+                        key: _contactSectionKey,
+                        child: ContactScreen(),
+                      ),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

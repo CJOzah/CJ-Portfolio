@@ -1,16 +1,16 @@
+import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:canaan_portfolio/constants.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/theme/theme_provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+import 'package:canaan_portfolio/theme/change_theme_button_widget.dart';
 // ignore_for_file: unused_local_variable
 
-import 'package:canaan_portfolio/constants.dart';
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:canaan_portfolio/theme/change_theme_button_widget.dart';
-import 'package:canaan_portfolio/theme/theme_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../random_moving_shapes.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Expanded(
-                        flex: 4,
+                        flex: 3,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Text(
                               "WELCOME TO MY WORLD",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             SizedBox(
                               height: 20,
@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                                 text: "Hi, I'm",
                                 style: Theme.of(context)
                                     .textTheme
-                                    .headline3!
+                                    .headlineMedium!
                                     .copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -73,10 +73,10 @@ class _HomePageState extends State<HomePage> {
                                     text: " Canaan Ozah\n",
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headline3!
+                                        .headlineMedium!
                                         .copyWith(
                                           color: Theme.of(context)
-                                              .primaryColorLight,
+                                              .splashColor,
                                           fontWeight: FontWeight.bold,
                                         ),
                                   ),
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                                     text: "a Professional Mobile/Web\n",
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headline4!
+                                        .headlineLarge!
                                         .copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -93,10 +93,10 @@ class _HomePageState extends State<HomePage> {
                                     text: "Developer",
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headline4!
+                                        .headlineLarge!
                                         .copyWith(
                                           color: Theme.of(context)
-                                              .primaryColorLight,
+                                              .splashColor,
                                           fontWeight: FontWeight.bold,
                                         ),
                                   ),
@@ -107,10 +107,10 @@ class _HomePageState extends State<HomePage> {
                               height: 30,
                             ),
                             Padding(
-                              padding: EdgeInsets.only(right: 100),
+                              padding: EdgeInsets.only(right: 50),
                               child: Text(
-                                "I'm a Cross Platform Software Developer with over 3 years of experience. I'm proficient in UI/UX designs, user experience,researching, Mobile Development and Web Development.",
-                                style: Theme.of(context).textTheme.bodyText1,
+                                "Senior Flutter Developer with 5+ years of experience building cross-platform mobile applications. Skilled in Dart and Flutter UI development, translating Figma designs into polished, high-fidelity prototypes and seamless user interfaces. Proven track record collaborating with UX/UI designers and cross-functional teams to deliver scalable, high-quality mobile experiences.",
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ),
                             ChangeThemeButtonWidget(),
@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                                         "FIND ME",
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyText1,
+                                            .bodyMedium,
                                       ),
                                       Row(
                                         mainAxisAlignment:
@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                                         "BEST SKILL ON",
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyText1,
+                                            .bodyMedium,
                                       ),
                                       Row(
                                         mainAxisAlignment:
@@ -240,10 +240,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(
-                        width: 20,
+                        width: 10,
                       ),
                       Expanded(
-                        flex: 3,
+                        flex: 4,
                         child: Column(
                           children: [
                             Stack(
@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                                         ? [
                                             BoxShadow(
                                               color:
-                                                  Colors.grey.withOpacity(0.3),
+                                                  Colors.grey.withValues(alpha: 0.3),
                                               spreadRadius: 1,
                                               blurRadius: 10,
                                               offset: Offset(2,
@@ -292,9 +292,10 @@ class _HomePageState extends State<HomePage> {
                                         fit: BoxFit.cover,
                                         image: !ThemeProvider().isDarkMode
                                             ? AssetImage(
-                                                "images/header.gif",
+                      "images/header.png",
                                               )
-                                            : AssetImage("images/header.gif"),
+                                            : AssetImage(
+                      "images/header.png",),
                                       )),
                                   child: Container(),
                                 ),
@@ -345,7 +346,7 @@ class _HomePageState extends State<HomePage> {
                                           ? [
                                               BoxShadow(
                                                 color: Colors.grey
-                                                    .withOpacity(0.3),
+                                                    .withValues(alpha: 0.3),
                                                 spreadRadius: 1,
                                                 blurRadius: 10,
                                                 offset: Offset(2,
@@ -382,10 +383,10 @@ class _HomePageState extends State<HomePage> {
                                           fit: BoxFit.cover,
                                           image: !ThemeProvider().isDarkMode
                                               ? AssetImage(
-                                                  "images/header.gif",
+                      "images/header.png",
                                                 )
                                               : AssetImage(
-                                                  "images/header.gif",
+                      "images/header.png",
                                                 ),
                                         )),
                                     child: Container(),
@@ -399,7 +400,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Text(
                             "WELCOME TO MY WORLD",
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           SizedBox(
                             height: 20,
@@ -411,13 +412,13 @@ class _HomePageState extends State<HomePage> {
                               style: sizingInformation.isDesktop
                                   ? Theme.of(context)
                                       .textTheme
-                                      .headline3!
+                                      .displaySmall!
                                       .copyWith(
                                         fontWeight: FontWeight.bold,
                                       )
                                   : Theme.of(context)
                                       .textTheme
-                                      .headline4!
+                                      .headlineMedium!
                                       .copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -426,7 +427,7 @@ class _HomePageState extends State<HomePage> {
                                   text: " Canaan Ozah",
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headline4!
+                                      .headlineMedium!
                                       .copyWith(
                                         color:
                                             Theme.of(context).primaryColorLight,
@@ -437,7 +438,7 @@ class _HomePageState extends State<HomePage> {
                                     text: " a Professional Mobile/Web",
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headline4!
+                                        .headlineMedium!
                                         .copyWith(
                                           fontWeight: FontWeight.bold,
                                         )),
@@ -445,7 +446,7 @@ class _HomePageState extends State<HomePage> {
                                   text: " Developer",
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headline4!
+                                      .headlineMedium!
                                       .copyWith(
                                         color:
                                             Theme.of(context).primaryColorLight,
@@ -463,7 +464,7 @@ class _HomePageState extends State<HomePage> {
                             child: Text(
                               "I'm a Cross Platform Software Developer with over 3 years of experience. I'm proficient in UI/UX designs, user experience,researching, Mobile Development and Web Development.",
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyText1,
+                              style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ),
                           SizedBox(
@@ -488,7 +489,7 @@ class _HomePageState extends State<HomePage> {
                                       "FIND ME",
                                       textAlign: TextAlign.center,
                                       style:
-                                          Theme.of(context).textTheme.bodyText1,
+                                          Theme.of(context).textTheme.bodyLarge,
                                     ),
                                     Row(
                                       mainAxisAlignment:
@@ -540,7 +541,7 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       "BEST SKILL ON",
                                       style:
-                                          Theme.of(context).textTheme.bodyText1,
+                                          Theme.of(context).textTheme.bodyLarge,
                                     ),
                                     Row(
                                       mainAxisAlignment:
@@ -596,10 +597,10 @@ class _HomePageState extends State<HomePage> {
             minX: SizeConfig.sW!.toInt() * 10,
             minY: SizeConfig.sH!.toInt() * 30,
             painter: Rectangle(
-              color: Colors.purple,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             radius: BorderRadius.zero,
-            color: Colors.purple,
+            color: Theme.of(context).secondaryHeaderColor,
             curve: Curves.slowMiddle,
             maxY: SizeConfig.sH!.toInt() * 70,
             maxX: SizeConfig.sW!.toInt() * 100,
@@ -678,7 +679,7 @@ class SocialButton extends StatelessWidget {
         height: 40.0,
         width: 40.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
         child: InkWell(onTap: function, child: Icon(icon)),
       ),
@@ -706,7 +707,7 @@ class SkillsButton extends StatelessWidget {
         height: 40.0,
         width: 40.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
         child: InkWell(onTap: function, child: Image.asset("images/$text")),
       ),

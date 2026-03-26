@@ -1,17 +1,15 @@
-// ignore_for_file: unused_local_variable
-
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/github_model.dart';
-import 'package:canaan_portfolio/onHover.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-
 import '../constants.dart';
 import '../github_api.dart';
 import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:canaan_portfolio/onHover.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/github_model.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+// ignore_for_file: unused_local_variable
 
 class PortfolioScreen extends StatefulWidget {
   const PortfolioScreen({Key? key}) : super(key: key);
@@ -46,117 +44,73 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               children: [
                 Text(
                   "What i've done",
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         color: Theme.of(context).secondaryHeaderColor,
                       ),
                 ),
                 Text(
                   "My Projects",
-                  style: Theme.of(context).textTheme.headline5!,
+                  style: Theme.of(context).textTheme.headlineSmall!,
                 ),
                 SizedBox(
                   height: 50,
                 ),
-                sizingInformation.isDesktop
-                    ? Provider.of<GithubRepos>(context, listen: true)
-                                .getGithubRepo()
-                                .length ==
-                            0
-                        ? LoadingWidget()
-                        : Container(
-                            alignment: Alignment.center,
-                            height: 1100,
-                            width: SizeConfig.sW! * 100,
-                            child: GridView.builder(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 100,
-                                  childAspectRatio: 2 / 3,
-                                  mainAxisSpacing: 100,
-                                  mainAxisExtent: SizeConfig.sW! * 25,
-                                ),
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                itemCount: Provider.of<GithubRepos>(context,
-                                            listen: true)
-                                        .getGithubRepo()
-                                        .length -
-                                    1,
-                                itemBuilder: (context, index) {
-                                  GithubRepo githubRepo =
-                                      Provider.of<GithubRepos>(context,
-                                              listen: true)
-                                          .getGithubRepo()[index + 1];
-                                  return FancyCard(
-                                    height2: 1000,
-                                    width: 400,
-                                    iconContainer: 80,
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
-                                    icon: FontAwesomeIcons.mobileAlt,
-                                    iconSize: 40,
-                                    title: githubRepo.description == null
-                                        ? "No Description"
-                                        : githubRepo.description!,
-                                    heading: githubRepo.name == null
-                                        ? "No Description"
-                                        : githubRepo.name!,
-                                    url: "${githubRepo.htmlUrl}",
-                                  );
-                                }),
-                          )
-                    :
-
-                    ///for Tablet Vieww
-                    ///
-                    Provider.of<GithubRepos>(context, listen: true)
-                                .getGithubRepo()
-                                .length ==
-                            0
-                        ? LoadingWidget()
-                        : Container(
-                            alignment: Alignment.center,
-                            height: 1100,
-                            width: SizeConfig.sW! * 100,
-                            child: GridView.builder(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 100,
-                                  mainAxisSpacing: 50,
-                                  mainAxisExtent: 300,
-                                ),
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                itemCount: Provider.of<GithubRepos>(context,
-                                            listen: true)
-                                        .getGithubRepo()
-                                        .length -
-                                    1,
-                                itemBuilder: (context, index) {
-                                  GithubRepo githubRepo =
-                                      Provider.of<GithubRepos>(context,
-                                              listen: true)
-                                          .getGithubRepo()[index + 1];
-                                  return FancyCard(
-                                    height2: 500,
-                                    width: 280,
-                                    iconContainer: 80,
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
-                                    icon: FontAwesomeIcons.mobileAlt,
-                                    iconSize: 40,
-                                    title: githubRepo.description == null
-                                        ? "No Description"
-                                        : githubRepo.description!,
-                                    heading: githubRepo.name == null
-                                        ? "No Description"
-                                        : githubRepo.name!,
-                                    url: "${githubRepo.htmlUrl}",
-                                  );
-                                }),
-                          ),
+                Provider.of<GithubRepos>(context, listen: true)
+                            .getGithubRepo()
+                            .length ==
+                        0
+                    ? LoadingWidget()
+                    : Container(
+                        alignment: Alignment.center,
+                        width: SizeConfig.sW! * 100,
+                        child: GridView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 40,
+                              mainAxisSpacing: 40,
+                              mainAxisExtent: sizingInformation.isDesktop
+                                  ? SizeConfig.sW! * 40
+                                  : 300,
+                            ),
+                            shrinkWrap: true,
+                            itemCount:
+                                Provider.of<GithubRepos>(context, listen: true)
+                                    .getGithubRepo()
+                                    .length,
+                            itemBuilder: (context, index) {
+                              GithubRepo githubRepo = Provider.of<GithubRepos>(
+                                      context,
+                                      listen: true)
+                                  .getGithubRepo()[index];
+                              return FancyCard(
+                                height2:
+                                    sizingInformation.isDesktop ? 1500 : 500,
+                                width: sizingInformation.isDesktop ? 400 : 280,
+                                iconContainer: 80,
+                                color: Theme.of(context).secondaryHeaderColor,
+                                icon: FontAwesomeIcons.mobileAlt,
+                                iconSize: 40,
+                                isInvited: Provider.of<GithubRepos>(context,
+                                        listen: true)
+                                    .isInvitedRepo(githubRepo),
+                                projectImageUrl: Provider.of<GithubRepos>(
+                                        context,
+                                        listen: true)
+                                    .getRepoReadmeHeaderImage(githubRepo),
+                                title: Provider.of<GithubRepos>(context,
+                                        listen: true)
+                                    .getRepoProjectDescription(githubRepo),
+                                heading: Provider.of<GithubRepos>(context,
+                                        listen: true)
+                                    .getRepoProjectHeading(githubRepo),
+                                url: Provider.of<GithubRepos>(context,
+                                        listen: true)
+                                    .getRepoProjectUrl(githubRepo),
+                              );
+                            }),
+                      ),
               ],
             ),
           ),
@@ -164,10 +118,10 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             minX: SizeConfig.sW!.toInt() * 10,
             minY: SizeConfig.sH!.toInt() * 30,
             painter: Rectangle(
-              color: Colors.purple,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             radius: BorderRadius.zero,
-            color: Colors.purple,
+            color: Theme.of(context).secondaryHeaderColor,
             curve: Curves.slowMiddle,
             maxY: SizeConfig.sH!.toInt() * 140,
             maxX: SizeConfig.sW!.toInt() * 100,
@@ -225,12 +179,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             minX: SizeConfig.sW!.toInt() * 30,
             minY: SizeConfig.sH!.toInt() * 30,
             painter: DrawTriangleShape(
-              color: Colors.purple,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             radius: BorderRadius.only(
                 bottomLeft: Radius.circular(50),
                 bottomRight: Radius.circular(50)),
-            color: Colors.purple,
+            color: Theme.of(context).secondaryHeaderColor,
             curve: Curves.fastOutSlowIn,
             maxY: SizeConfig.sH!.toInt() * 140,
             maxX: SizeConfig.sW!.toInt() * 100,
@@ -263,6 +217,8 @@ class FancyCard extends StatefulWidget {
   final double? iconContainer;
   final double? iconSize;
   final String? url;
+  final bool isInvited;
+  final String? projectImageUrl;
   FancyCard({
     Key? key,
     this.height,
@@ -275,6 +231,8 @@ class FancyCard extends StatefulWidget {
     this.iconSize,
     this.iconContainer,
     this.url,
+    this.isInvited = false,
+    this.projectImageUrl,
   }) : super(key: key);
 
   @override
@@ -294,8 +252,8 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
   bool showImage = false;
   Color color = Colors.transparent;
   LinearGradient? gradient1 = LinearGradient(colors: [
-    Color(0xFF0000FF).withOpacity(0.8),
-    Colors.purple.withOpacity(0.8),
+    Color(0xFF0ef782c).withValues(alpha: 0.8),
+    Color(0xff072b42).withValues(alpha: 0.8),
   ]);
 
   @override
@@ -306,6 +264,9 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
         upperBound: 1.75,
         duration: Duration(milliseconds: 300));
     _controllerA!.addListener(() {
+      if (!mounted) {
+        return;
+      }
       setState(() {
         offset1 = _controllerA!.value;
       });
@@ -316,6 +277,9 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
         upperBound: 0.6,
         duration: Duration(milliseconds: 300));
     _controllerB!.addListener(() {
+      if (!mounted) {
+        return;
+      }
       setState(() {
         offset3 = -_controllerB!.value;
       });
@@ -325,8 +289,8 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _controllerA!.dispose();
-    _controllerB!.dispose();
+    _controllerA?.dispose();
+    _controllerB?.dispose();
     super.dispose();
   }
 
@@ -341,12 +305,15 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
       isHovered
           ? _controllerA!.forward().whenCompleteOrCancel(() {
               gradient1 = LinearGradient(colors: [
-                Colors.purple.withOpacity(0.8),
-                Theme.of(context).primaryColorLight.withOpacity(0.8),
+                Color(0xFF0ef782c).withValues(alpha: 0.8),
+                Color(0xff072b42).withValues(alpha: 0.8),
               ]);
               Future.delayed(Duration(milliseconds: 180)).then((value) {
+                if (!mounted) {
+                  return;
+                }
                 color = Color(0xFF262626);
-                title = getWordsExceptFirst(widget.title);
+                title = widget.title;
                 heading = widget.heading;
                 setState(() {
                   showImage = true;
@@ -355,10 +322,13 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
             })
           : _controllerA!.reverse().whenCompleteOrCancel(() {
               gradient1 = LinearGradient(colors: [
-                Theme.of(context).primaryColorLight.withOpacity(0.8),
-                Colors.purple.withOpacity(0.8),
+                Color(0xFF0ef782c).withValues(alpha: 0.8),
+                Color(0xff072b42).withValues(alpha: 0.8), 
               ]);
               Future.delayed(Duration(milliseconds: 50)).then((value) {
+                if (!mounted) {
+                  return;
+                }
                 color = Colors.transparent;
                 title = "";
                 heading = "";
@@ -374,13 +344,6 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
         height: widget.height2,
         width: widget.width,
         decoration: BoxDecoration(
-          image: showImage == false
-              ? DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(
-                    "${getFirstWord(widget.title)}",
-                  ))
-              : null,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(
                 10.0,
@@ -395,6 +358,42 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
         child: Stack(
           alignment: AlignmentDirectional.center,
           children: [
+            if (showImage == false &&
+                widget.projectImageUrl != null &&
+                widget.projectImageUrl!.isNotEmpty)
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    widget.projectImageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.black12,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            if (showImage == false && widget.isInvited)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
+                  child: Text(
+                    "Invited",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge!
+                        .copyWith(fontSize: 12, color: Colors.white),
+                  ),
+                ),
+              ),
             Transform(
               alignment: FractionalOffset(0.0, offset3),
               transform: new Matrix4.identity()..rotateZ(-32 * 3.1415927 / 180),
@@ -430,7 +429,7 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
                 Text(
                   heading,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 const SizedBox(
@@ -441,7 +440,7 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText1!
+                      .bodyLarge!
                       .copyWith(fontSize: 18, color: Colors.white),
                 ),
                 const SizedBox(
@@ -458,15 +457,19 @@ class _FancyCardState extends State<FancyCard> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                         gradient: LinearGradient(colors: [
-                          Colors.purple.withOpacity(0.8),
-                          Theme.of(context).primaryColorLight.withOpacity(0.8),
+                          Theme.of(context)
+                              .secondaryHeaderColor
+                              .withValues(alpha: 0.8),
+                          Theme.of(context)
+                              .primaryColorLight
+                              .withValues(alpha: 0.8),
                         ]),
                       ),
                       child: Text(
                         "View Project",
                         style: Theme.of(context)
                             .textTheme
-                            .bodyText1!
+                            .bodyLarge!
                             .copyWith(color: Colors.white),
                       ),
                     ),

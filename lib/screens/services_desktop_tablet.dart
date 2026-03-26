@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:canaan_portfolio/onHover.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/random_moving_shapes.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
 // ignore_for_file: unused_local_variable
 
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/onHover.dart';
-import 'package:canaan_portfolio/random_moving_shapes.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 
 class ServicesPageDesktopTab extends StatefulWidget {
   const ServicesPageDesktopTab({Key? key}) : super(key: key);
@@ -42,13 +42,13 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                 children: [
                   Text(
                     "What i do",
-                    style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: Theme.of(context).secondaryHeaderColor,
                         ),
                   ),
                   Text(
                     "My Services",
-                    style: Theme.of(context).textTheme.headline5!,
+                    style: Theme.of(context).textTheme.headlineSmall!,
                   ),
                   SizedBox(
                     height: 50,
@@ -66,7 +66,7 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                 height2: 290,
                                 width: 360,
                                 iconContainer: 80,
-                                color: Theme.of(context).secondaryHeaderColor,
+                                color: Theme.of(context).primaryColorLight,
                                 icon: FontAwesomeIcons.mobileAlt,
                                 iconSize: 40,
                                 title: "Mobile Development",
@@ -86,9 +86,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                 color: Color(0xFF39BD9C),
                                 icon: Icons.web,
                                 iconSize: 40,
-                                title: "Website Development",
+                                title: "Cross-Platform App Development",
                                 body:
-                                    "I use various web technologies to develop attractive websites which converts visitors to customers. I develop creative and responsive website layouts.",
+                                    "I build production-ready Flutter apps for Android, iOS, web, and desktop with shared business logic and platform-specific polish.",
                               ),
                             ),
                             SizedBox(
@@ -103,9 +103,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                 color: Color(0xFF8838B4),
                                 icon: FontAwesomeIcons.mobile,
                                 iconSize: 40,
-                                title: "Website Design",
+                                title: "Mobile-First Product Design",
                                 body:
-                                    "I use various web technologies to develop attractive websites which converts visitors to customers. I develop creative and responsive website layouts.",
+                                    "I design intuitive mobile experiences, create scalable design systems, and translate product goals into clean, high-converting interfaces.",
                               ),
                             ),
                           ],
@@ -139,9 +139,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                               color: Color(0xFF39BD9C),
                               icon: Icons.web,
                               iconSize: 40,
-                              title: "Website Development",
+                              title: "Cross-Platform App Development",
                               body:
-                                  "I use various web technologies to develop attractive websites which converts visitors to customers. I develop creative and responsive website layouts.",
+                                  "I build production-ready Flutter apps for Android, iOS, web, and desktop with shared business logic and platform-specific polish.",
                             ),
                             SizedBox(
                               height: 50.0,
@@ -154,9 +154,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                               color: Color(0xFF8838B4),
                               icon: FontAwesomeIcons.mobile,
                               iconSize: 40,
-                              title: "Website Design",
+                              title: "Mobile-First Product Design",
                               body:
-                                  "I use various web technologies to develop attractive websites which converts visitors to customers. I develop creative and responsive website layouts.",
+                                  "I design intuitive mobile experiences, create scalable design systems, and translate product goals into clean, high-converting interfaces.",
                             ),
                           ],
                         ),
@@ -169,14 +169,14 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                           "Work Flow",
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle1!
+                              .titleMedium!
                               .copyWith(
                                 color: Theme.of(context).secondaryHeaderColor,
                               ),
                         ),
                         Text(
                           "My Work Process",
-                          style: Theme.of(context).textTheme.headline5!,
+                          style: Theme.of(context).textTheme.headlineSmall!,
                         ),
                         SizedBox(
                           height: 50,
@@ -185,9 +185,10 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                         ///
                         ///
                         sizingInformation.isDesktop
-                            ? Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                            ? Wrap(
+                                spacing: 12,
+                                runSpacing: 12,
+                                alignment: WrapAlignment.center,
                                 children: [
                                   FancyCardSmall(
                                     height: 200,
@@ -198,9 +199,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                         Theme.of(context).secondaryHeaderColor,
                                     icon: FontAwesomeIcons.mobileAlt,
                                     iconSize: 28,
-                                    title: "Development",
+                                    title: "Discovery & Product Scoping",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I define user stories, key flows, and technical constraints to shape a clear Flutter mobile roadmap.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -210,9 +211,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     icon: Icons.web,
                                     iconContainer: 20,
                                     iconSize: 28,
-                                    title: "Development",
+                                    title: "Flutter Architecture",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I design scalable app structure with clean layers, state management, and reusable components for long-term maintainability.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -222,9 +223,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     color: Color(0xFF39BD9C),
                                     icon: FontAwesomeIcons.mobile,
                                     iconSize: 28,
-                                    title: "Design",
+                                    title: "UI/UX Implementation",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I build smooth, responsive interfaces in Flutter with adaptive layouts, polished interactions, and accessibility in mind.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -234,9 +235,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     icon: Icons.web,
                                     iconContainer: 20,
                                     iconSize: 28,
-                                    title: "Development",
+                                    title: "API & Data Integration",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I connect apps to secure APIs, implement caching and offline handling, and model reliable data for mobile performance.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -246,9 +247,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     color: Color(0xFF8838B4),
                                     icon: FontAwesomeIcons.mobile,
                                     iconSize: 28,
-                                    title: "Design",
+                                    title: "Testing & Release",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I cover core flows with tests, optimize builds, and deliver production-ready apps with monitoring and iterative updates.",
                                   ),
                                 ],
                               )
@@ -276,9 +277,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                         Theme.of(context).secondaryHeaderColor,
                                     icon: FontAwesomeIcons.mobileAlt,
                                     iconSize: 28,
-                                    title: "Development",
+                                    title: "Discovery & Product Scoping",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I define user stories, key flows, and technical constraints to shape a clear Flutter mobile roadmap.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -288,9 +289,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     icon: Icons.web,
                                     iconContainer: 20,
                                     iconSize: 28,
-                                    title: "Development",
+                                    title: "Flutter Architecture",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I design scalable app structure with clean layers, state management, and reusable components for long-term maintainability.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -300,9 +301,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     color: Color(0xFF39BD9C),
                                     icon: FontAwesomeIcons.mobile,
                                     iconSize: 28,
-                                    title: "Design",
+                                    title: "UI/UX Implementation",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I build smooth, responsive interfaces in Flutter with adaptive layouts, polished interactions, and accessibility in mind.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -312,9 +313,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     icon: Icons.web,
                                     iconContainer: 20,
                                     iconSize: 28,
-                                    title: "Development",
+                                    title: "API & Data Integration",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I connect apps to secure APIs, implement caching and offline handling, and model reliable data for mobile performance.",
                                   ),
                                   FancyCardSmall(
                                     height: 200,
@@ -324,9 +325,9 @@ class _ServicesPageDesktopTabState extends State<ServicesPageDesktopTab> {
                                     color: Color(0xFF8838B4),
                                     icon: FontAwesomeIcons.mobile,
                                     iconSize: 28,
-                                    title: "Design",
+                                    title: "Testing & Release",
                                     body:
-                                        "I conduct user research to identify the problem I want to solve.",
+                                        "I cover core flows with tests, optimize builds, and deliver production-ready apps with monitoring and iterative updates.",
                                   ),
                                 ],
                               ),
@@ -431,8 +432,8 @@ class FancyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnHover(builder: (isHovered) {
       final containerColor = isHovered
-          ? Theme.of(context).primaryColorLight
-          : Theme.of(context).backgroundColor;
+          ? Theme.of(context).primaryColorDark
+          : Theme.of(context).scaffoldBackgroundColor;
       return Stack(
         alignment: Alignment.center,
         children: [
@@ -465,7 +466,7 @@ class FancyCard extends StatelessWidget {
             ),
           ),
           InkWell(
-            hoverColor: Theme.of(context).primaryColorLight,
+            hoverColor: Theme.of(context).primaryColorDark,
             child: Container(
               padding:
                   EdgeInsets.only(left: 25, top: 16, bottom: 35, right: 25),
@@ -496,7 +497,7 @@ class FancyCard extends StatelessWidget {
                     width: iconContainer,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(80)),
-                      color: color!.withOpacity(0.3),
+                      color: color!.withValues(alpha: 0.3),
                     ),
                     child: Icon(
                       icon,
@@ -509,7 +510,7 @@ class FancyCard extends StatelessWidget {
                   ),
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -517,11 +518,15 @@ class FancyCard extends StatelessWidget {
                   SizedBox(
                     height: 15,
                   ),
-                  Text(
-                    body,
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          color: Colors.white,
-                        ),
+                  Expanded(
+                    child: Text(
+                      body,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
                   ),
                 ],
               ),
@@ -560,8 +565,8 @@ class FancyCardSmall extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnHover(builder: (isHovered) {
       final containerColor = isHovered
-          ? Theme.of(context).primaryColorLight
-          : Theme.of(context).backgroundColor;
+          ? Theme.of(context).primaryColorDark
+          : Theme.of(context).scaffoldBackgroundColor;
       return Stack(
         alignment: Alignment.center,
         children: [
@@ -594,7 +599,7 @@ class FancyCardSmall extends StatelessWidget {
             ),
           ),
           InkWell(
-            hoverColor: Theme.of(context).primaryColorLight,
+            hoverColor: Theme.of(context).primaryColor,
             child: Container(
               padding:
                   EdgeInsets.only(left: 15, top: 16, bottom: 30, right: 15),
@@ -630,7 +635,7 @@ class FancyCardSmall extends StatelessWidget {
                   ),
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -638,11 +643,15 @@ class FancyCardSmall extends StatelessWidget {
                   SizedBox(
                     height: 8,
                   ),
-                  Text(
-                    body,
-                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          color: Colors.white,
-                        ),
+                  Expanded(
+                    child: Text(
+                      body,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
                   ),
                 ],
               ),

@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 // ignore_for_file: deprecated_member_use
 
+class AppPalette {
+  static const Color primary = Color(0xFF03273f);
+  static const Color secondary = Color(0xFF0F4C5C);
+  static const Color background = Color(0xFFF8F9FA);
+  static const Color accent = Color(0xFFf2842f);
+  static const Color text = Color(0xFF1B263B);
+}
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.light;
@@ -15,93 +22,107 @@ class ThemeProvider extends ChangeNotifier {
 
 class MyThemes {
   static final darkTheme = ThemeData(
-    scaffoldBackgroundColor: Color(0xff17122A),
-    backgroundColor: Color(0xff17122A),
-    primaryColor: Color(0xFF000C66),
-    primaryColorDark: Color(0xFF050A30),
-    primaryColorLight: Color(0xFF1D4788),
-    secondaryHeaderColor: Color(0xFFD21D5B), 
-    dividerColor: Colors.grey,
+    scaffoldBackgroundColor: AppPalette.primary,
+    primaryColor: AppPalette.primary,
+    primaryColorDark: AppPalette.text,
+    primaryColorLight: AppPalette.secondary,
+    secondaryHeaderColor: AppPalette.accent,
+    splashColor: Color(0xFFf2842f),
+    dividerColor: AppPalette.secondary.withValues(alpha: 0.35),
     textTheme: TextTheme().copyWith(
-      bodyText1: TextStyle(
-        color: Colors.white,
+      bodyLarge: TextStyle(
+        color: AppPalette.background,
         height: 1.5,
         fontSize: 16.0,
       ),
-      bodyText2: TextStyle(
-        color: Colors.white,
+      bodyMedium: TextStyle(
+        color: AppPalette.background,
       ),
-      headline4: TextStyle(
-        color: Colors.white,
+      headlineMedium: TextStyle(
+        color: AppPalette.background,
       ),
-      headline5: TextStyle(
-        color: Colors.white,
+      headlineSmall: TextStyle(
+        color: AppPalette.background,
       ),
-      headline6: TextStyle(
-        color: Colors.white,
+      titleLarge: TextStyle(
+        color: AppPalette.background,
       ),
-      headline3: TextStyle(
-        color: Colors.white,
+      displaySmall: TextStyle(
+        color: AppPalette.background,
       ),
     ),
     buttonTheme: ButtonThemeData().copyWith(
-      buttonColor: Color(0xFF121212),
+      buttonColor: AppPalette.secondary,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(
-          Color(0xFF1D4788),
+          AppPalette.secondary,
         ),
         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
           EdgeInsets.only(left: 45.0, right: 45.0, top: 20.0, bottom: 20.0),
         ),
         textStyle: MaterialStateProperty.all<TextStyle>(
-          TextStyle(fontSize: 15.0, color: Colors.white),
+          TextStyle(fontSize: 15.0, color: AppPalette.background),
         ),
         elevation: MaterialStateProperty.all<double>(15.0),
         shadowColor: MaterialStateProperty.all<Color>(
-          Color(0xFF1D4788),
+          AppPalette.text,
         ),
       ),
     ),
-    colorScheme: ColorScheme.dark(), 
-    iconTheme: IconThemeData(color: Colors.white, opacity: 0.8, size: 24),
+    colorScheme: ColorScheme.dark(
+      primary: AppPalette.primary,
+      secondary: AppPalette.accent,
+      surface: AppPalette.secondary,
+      onPrimary: AppPalette.background,
+      onSecondary: AppPalette.text,
+      onSurface: AppPalette.background,
+    ),
+    iconTheme: IconThemeData(
+      color: AppPalette.background,
+      opacity: 0.8,
+      size: 24,
+    ),
   );
 
   static final lightTheme = ThemeData(
-    scaffoldBackgroundColor: Color(0xffEDF1F4),
-    backgroundColor: Color(0xFFffffff),
-    primaryColor: Color(0xFF000C66),
-    primaryColorDark: Color(0xFF050A30),
-    primaryColorLight: Color(0xFF0000FF),
-    secondaryHeaderColor: Color(0xFFF0A904), 
-    dividerColor: Color(0xFFFFFFFF),
+    scaffoldBackgroundColor: AppPalette.background,
+    primaryColor: AppPalette.primary,
+    primaryColorDark: AppPalette.text,
+    primaryColorLight: AppPalette.secondary,
+    secondaryHeaderColor: AppPalette.accent,
+    dividerColor: Colors.white,
     textTheme: TextTheme().copyWith(
-      bodyText1: TextStyle(color: Colors.black, fontSize: 16.0, height: 1.5),
-      bodyText2: TextStyle(
-        color: Colors.black,
+      bodyLarge: TextStyle(
+        color: AppPalette.text,
+        fontSize: 16.0,
+        height: 1.5,
       ),
-      headline4: TextStyle(
-        color: Colors.black,
+      bodyMedium: TextStyle(
+        color: AppPalette.text,
       ),
-      headline5: TextStyle(
-        color: Colors.black,
+      headlineMedium: TextStyle(
+        color: AppPalette.text,
       ),
-      headline6: TextStyle(
-        color: Colors.black,
+      headlineSmall: TextStyle(
+        color: AppPalette.text,
       ),
-      headline3: TextStyle(
-        color: Colors.black,
+      titleLarge: TextStyle(
+        color: AppPalette.text,
+      ),
+      displaySmall: TextStyle(
+        color: AppPalette.text,
       ),
     ),
     buttonTheme: ButtonThemeData().copyWith(
-      buttonColor: Color(0xFF121212),
-      hoverColor: Color(0xFF121212),
+      buttonColor: AppPalette.primary,
+      hoverColor: AppPalette.secondary,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(
-          Color(0xFF0000FF),
+          AppPalette.primary,
         ),
         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
           EdgeInsets.only(left: 45.0, right: 45.0, top: 20.0, bottom: 20.0),
@@ -109,14 +130,21 @@ class MyThemes {
         textStyle: MaterialStateProperty.all<TextStyle>(
           TextStyle(
             fontSize: 15.0,
-            color: Colors.white,
+            color: AppPalette.background,
           ),
         ),
         elevation: MaterialStateProperty.all<double>(15.0),
-        shadowColor: MaterialStateProperty.all<Color>(Color(0xFF0000FF)),
+        shadowColor: MaterialStateProperty.all<Color>(AppPalette.text),
       ),
     ),
-    colorScheme: ColorScheme.light(), 
-    iconTheme: IconThemeData(color: Colors.black, opacity: 0.8, size: 24),
+    colorScheme: ColorScheme.light(
+      primary: AppPalette.primary,
+      secondary: AppPalette.accent,
+      surface: AppPalette.background,
+      onPrimary: AppPalette.background,
+      onSecondary: AppPalette.text,
+      onSurface: AppPalette.text,
+    ),
+    iconTheme: IconThemeData(color: AppPalette.text, opacity: 0.8, size: 24),
   );
 }

@@ -51,14 +51,14 @@ class _MobileAboutScreenState extends State<MobileAboutScreen> {
                       ),
                       Text(
                         "Who I am",
-                        style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).secondaryHeaderColor,
                             ),
                       ),
                       Text(
                         "About Me",
-                        style: Theme.of(context).textTheme.headline3!,
+                        style: Theme.of(context).textTheme.displaySmall!,
                       ),
                       SizedBox(
                         height: 20.0,
@@ -66,7 +66,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen> {
                       Text(
                           "I am a Mobile/Website Developer with a strong focus in UI/UX design, Top Notch Backend Performances and Clean Architecture. I love getting new experiences and also a fast learner.",
                           textAlign: TextAlign.left,
-                          style: Theme.of(context).textTheme.bodyText1!),
+                          style: Theme.of(context).textTheme.bodyLarge!),
                       SizedBox(
                         height: 20.0,
                       ),
@@ -81,7 +81,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen> {
                                   .getGithubRepo()[0]
                                   .description ?? ""),
                               textAlign: textAlignment,
-                              style: Theme.of(context).textTheme.bodyText1!),
+                              style: Theme.of(context).textTheme.bodyLarge!),
                       SizedBox(
                         height: 50.0,
                       ),

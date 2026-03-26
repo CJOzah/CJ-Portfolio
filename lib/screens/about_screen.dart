@@ -1,17 +1,17 @@
-// ignore_for_file: unused_local_variable
-
-import 'dart:developer';
-
-import 'package:canaan_portfolio/constants.dart';
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:canaan_portfolio/theme/theme_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-
 import '../github_api.dart';
 import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:canaan_portfolio/constants.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/theme/theme_provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:flutter/services.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
+// ignore_for_file: unused_local_variable
+
+
+
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({Key? key}) : super(key: key);
@@ -21,6 +21,22 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
+  static const String _cvAssetPath = "images/cv.pdf";
+
+  /// Downloads/opens CV PDF from bundled Flutter assets.
+  Future<void> _downloadCvFromAssets(BuildContext context) async {
+    try {
+      await rootBundle.load(_cvAssetPath);
+      await launchInBrowser(Uri.parse("assets/$_cvAssetPath"));
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("CV PDF not found at assets/$_cvAssetPath"),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -83,7 +99,7 @@ class _AboutScreenState extends State<AboutScreen> {
                               "Who I am",
                               style: Theme.of(context)
                                   .textTheme
-                                  .subtitle1!
+                                  .titleMedium!
                                   .copyWith(
                                     fontWeight: FontWeight.bold,
                                     color:
@@ -95,7 +111,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             ),
                             Text(
                               "About Me",
-                              style: Theme.of(context).textTheme.headline5!,
+                              style: Theme.of(context).textTheme.headlineSmall!,
                             ),
                             SizedBox(
                               height: 20.0,
@@ -103,7 +119,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             Text(
                                 "I am a Mobile/Website Developer with a strong focus in UI/UX design, Top Notch Backend Performances and Clean Architecture. I love getting new experiences and also a fast learner.",
                                 textAlign: textAlignment,
-                                style: Theme.of(context).textTheme.bodyText1!),
+                                style: Theme.of(context).textTheme.bodyMedium!),
                             SizedBox(
                               height: 20.0,
                             ),
@@ -123,36 +139,17 @@ class _AboutScreenState extends State<AboutScreen> {
                                             ),
                                     textAlign: textAlignment,
                                     style:
-                                        Theme.of(context).textTheme.bodyText1!),
+                                        Theme.of(context).textTheme.bodyMedium!),
                             SizedBox(
                               height: 50.0,
                             ),
                             ElevatedButton(
                                 onPressed: () {
-                                  print(getFirstWord(Provider.of<GithubRepos>(
-                                          context,
-                                          listen: false)
-                                      .getGithubRepo()[0]
-                                      .description == null ? "" : Provider.of<GithubRepos>(
-                                          context,
-                                          listen: false)
-                                      .getGithubRepo()[0]
-                                      .description!
-                                      ));
-                                  launchInBrowser(Uri.parse(getFirstWord(
-                                      Provider.of<GithubRepos>(context,
-                                              listen: false)
-                                          .getGithubRepo()[0]
-                                          .description == null ? "" : Provider.of<GithubRepos>(
-                                          context,
-                                          listen: false)
-                                      .getGithubRepo()[0]
-                                      .description!)));
-                                  debugPrint("url launched");
+                                  _downloadCvFromAssets(context);
                                 },
                                 child: Text(
                                   "Download CV",
-                                  style: Theme.of(context).textTheme.bodyText1,
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ))
                           ],
                         ),
@@ -172,7 +169,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           boxShadow: ThemeProvider().isDarkMode
                               ? [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
+                                    color: Colors.grey.withValues(alpha: 0.3),
                                     spreadRadius: 1,
                                     blurRadius: 10,
                                     offset: Offset(
@@ -221,7 +218,7 @@ class _AboutScreenState extends State<AboutScreen> {
                               "Who I am",
                               style: Theme.of(context)
                                   .textTheme
-                                  .subtitle1!
+                                  .titleMedium!
                                   .copyWith(
                                     fontWeight: FontWeight.bold,
                                     color:
@@ -233,7 +230,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             ),
                             Text(
                               "About Me",
-                              style: Theme.of(context).textTheme.headline5!,
+                              style: Theme.of(context).textTheme.headlineSmall!,
                             ),
                             SizedBox(
                               height: 20.0,
@@ -241,7 +238,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             Text(
                                 "I am a Mobile/Website Developer with a strong focus in UI/UX design, Top Notch Backend Performances and Clean Architecture. I love getting new experiences and also a fast learner.",
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyText1!),
+                                style: Theme.of(context).textTheme.bodyMedium!),
                             SizedBox(
                               height: 20.0,
                             ),
@@ -261,12 +258,15 @@ class _AboutScreenState extends State<AboutScreen> {
                                       .description!),
                                     textAlign: textAlignment,
                                     style:
-                                        Theme.of(context).textTheme.bodyText1!),
+                                        Theme.of(context).textTheme.bodyMedium!),
                             SizedBox(
                               height: 50.0,
                             ),
                             ElevatedButton(
-                                onPressed: () {}, child: Text("Download CV"))
+                                onPressed: () {
+                                  _downloadCvFromAssets(context);
+                                },
+                                child: Text("Download CV"))
                           ],
                         ),
                       ),

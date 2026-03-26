@@ -1,5 +1,4 @@
 import 'package:canaan_portfolio/screens/HomePage.dart';
-import 'package:canaan_portfolio/screens/about_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeContentDesktop extends StatefulWidget {

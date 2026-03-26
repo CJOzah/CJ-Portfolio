@@ -1,16 +1,17 @@
+import '../random_moving_shapes.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:canaan_portfolio/size_config.dart';
+import 'package:canaan_portfolio/theme/theme_provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
 
 // ignore_for_file: unused_local_variable, import_of_legacy_library_into_null_safe
 
-import 'package:canaan_portfolio/custom%20paint/custom_paint.dart';
-import 'package:canaan_portfolio/size_config.dart';
-import 'package:canaan_portfolio/theme/theme_provider.dart';
-import 'package:flutter/material.dart';
 // import 'package:flutter_svprogresshud/flutter_svprogresshud.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:mailgun/mailgun.dart';
-import 'package:provider/provider.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-import '../random_moving_shapes.dart';
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({Key? key}) : super(key: key);
@@ -32,10 +33,38 @@ class _ContactScreenState extends State<ContactScreen> {
   String errorMessage = "Make sure all fields are filled";
   bool validEmail = false;
 
-  //a method to show the message
-  void _showMessage(String message) {
-    final snackBar = SnackBar(content: Text(message));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  /// Builds the WhatsApp message using the current contact form values.
+  String _buildWhatsappMessage() {
+    final String enteredName = _controllerName.text.trim();
+    final String enteredEmail = _controllerEmail.text.trim();
+    final String enteredPhone = _controllerPhone.text.trim();
+    final String enteredMessage = _controllerText.text.trim();
+
+    return "Hello, I am $enteredName.\n"
+        "Email: $enteredEmail\n"
+        "Phone: $enteredPhone\n"
+        "Message: $enteredMessage";
+  }
+
+  /// Opens WhatsApp chat with a prefilled message from form fields.
+  Future<void> _openWhatsappWithPrefilledMessage() async {
+    final String message = _buildWhatsappMessage();
+    final Uri whatsappUri = Uri.parse(
+      "https://wa.me/2347056524189?text=${Uri.encodeComponent(message)}",
+    );
+
+    final bool launched = await launchUrl(
+      whatsappUri,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Unable to open WhatsApp"),
+        ),
+      );
+    }
   }
 
   @override
@@ -104,13 +133,13 @@ class _ContactScreenState extends State<ContactScreen> {
         alignment: Alignment.bottomCenter,
         children: [
           Container(
-            margin: EdgeInsets.only(top: 50.0),
+            margin: EdgeInsets.only(top: 50.0, bottom: 100),
             width: SizeConfig.sW! * 160,
             child: Column(
               children: [
                 Text(
                   "Contact Me",
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).secondaryHeaderColor,
                       ),
@@ -120,14 +149,14 @@ class _ContactScreenState extends State<ContactScreen> {
                 ),
                 Text(
                   "Get In Touch",
-                  style: Theme.of(context).textTheme.headline5!,
+                  style: Theme.of(context).textTheme.headlineMedium!,
                 ),
                 SizedBox(
                   height: 10,
                 ),
                 Text(
                   "I am available for professional job offers and getting in touch is just a click away.",
-                  style: Theme.of(context).textTheme.bodyText1!,
+                  style: Theme.of(context).textTheme.bodyMedium!,
                 ),
                 SizedBox(
                   height: 50,
@@ -249,13 +278,13 @@ class _ContactScreenState extends State<ContactScreen> {
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      ContactLinls(
-                                        text: "Warri, Delta State",
-                                        icon: FontAwesomeIcons.locationArrow,
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
+                                      // ContactLinls(
+                                      //   text: "Port, Delta State",
+                                      //   icon: FontAwesomeIcons.locationArrow,
+                                      // ),
+                                      // SizedBox(
+                                      //   height: 20,
+                                      // ),
                                       ContactLinls(
                                         text: "bdiamondozah@gmail.com",
                                         icon: FontAwesomeIcons.solidEnvelope,
@@ -272,43 +301,7 @@ class _ContactScreenState extends State<ContactScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    // if (name.isEmpty ||
-                                    //     phone.isEmpty ||
-                                    //     text.isEmpty ||
-                                    //     email.isEmpty) {
-                                    //   _showMessage(errorMessage);
-                                    // } else {
-                                    //   await contactMe(
-                                    //       cb: ((cb) {
-                                    //         if (cb == "loading") {
-                                    //           SVProgressHUD.show(
-                                    //               status: "Loading");
-                                    //           debugPrint(
-                                    //               "Loading...............................");
-                                    //         }
-                                    //         if (cb == "failed") {
-                                    //           SVProgressHUD.dismiss();
-                                    //           debugPrint(
-                                    //               "failed..........................");
-                                    //           _showMessage(
-                                    //               "Error occured, try again");
-                                    //         }
-                                    //       }),
-                                    //       data: ((data) {
-                                    //         SVProgressHUD.dismiss();
-                                    //         debugPrint(
-                                    //             "Successful.....................................");
-
-                                    //         _showMessage("Mail sent");
-                                    //       }),
-                                    //       to: "bdiamondozah@gmail.com",
-                                    //       text:
-                                    //           "$text with phone number: $phone",
-                                    //       subject: name,
-                                    //       from: email);
-                                    // }
-
-                                    // SVProgressHUD.dismiss();
+                                    await _openWhatsappWithPrefilledMessage();
                                   },
                                   child: Text(
                                     "Contact Me",
@@ -457,43 +450,7 @@ class _ContactScreenState extends State<ContactScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    // if (name.isEmpty ||
-                                    //     phone.isEmpty ||
-                                    //     text.isEmpty ||
-                                    //     email.isEmpty) {
-                                    //   _showMessage(errorMessage);
-                                    // } else {
-                                    //   await contactMe(
-                                    //       cb: ((cb) {
-                                    //         if (cb == "loading") {
-                                    //           SVProgressHUD.show(
-                                    //               status: "Loading");
-                                    //           debugPrint(
-                                    //               "Loading...............................");
-                                    //         }
-                                    //         if (cb == "failed") {
-                                    //           SVProgressHUD.dismiss();
-                                    //           debugPrint(
-                                    //               "failed..........................");
-                                    //           _showMessage(
-                                    //               "Error occured, try again");
-                                    //         }
-                                    //       }),
-                                    //       data: ((data) {
-                                    //         SVProgressHUD.dismiss();
-                                    //         debugPrint(
-                                    //             "Successful.....................................");
-
-                                    //         _showMessage("Mail sent");
-                                    //       }),
-                                    //       to: "bdiamondozah@gmail.com",
-                                    //       text:
-                                    //           "$text with phone number: $phone",
-                                    //       subject: name,
-                                    //       from: email);
-                                    // }
-
-                                    // SVProgressHUD.dismiss();
+                                    await _openWhatsappWithPrefilledMessage();
                                   },
                                   child: Text(
                                     "Contact Me",
@@ -556,15 +513,15 @@ class _ContactScreenState extends State<ContactScreen> {
             color: Theme.of(context).secondaryHeaderColor,
             maxY: SizeConfig.sH!.toInt() * 70,
             maxX: SizeConfig.sW!.toInt() * 100,
-          ),
+          ), 
           Container(
             padding: EdgeInsets.all(4),
             width: double.infinity,
-            color: Theme.of(context).primaryColorDark,
+            color: const Color(0xFF072B42),
             child: Center(
               child: Text(
                 "© Copyright 2022. All right reserved",
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Colors.white,
                     ),
               ),
@@ -607,7 +564,7 @@ class ContactLinls extends StatelessWidget {
           child: Text(
             text!,
             overflow: TextOverflow.clip,
-            style: Theme.of(context).textTheme.bodyText1!.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   fontSize: 20,
                 ),
           ),
@@ -693,7 +650,7 @@ class CustTextField extends StatelessWidget {
       cursorColor: theme.primaryColor,
       textAlign: TextAlign.start,
       textAlignVertical: TextAlignVertical.top,
-      style: theme.textTheme.bodyText1,
+      style: theme.textTheme.bodyMedium,
       onChanged: onchanged,
       validator: validate,
     );

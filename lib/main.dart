@@ -1,6 +1,7 @@
 
 
 import 'package:canaan_portfolio/github_api.dart';
+import 'package:canaan_portfolio/config/env_config.dart';
 import 'package:canaan_portfolio/screens/home.dart';
 import 'package:canaan_portfolio/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ Future<void> main() async {
     statusBarColor: Colors.transparent,
   ));
   WidgetsFlutterBinding.ensureInitialized();
+  await EnvConfig.load();
   runApp(Canaan());
 }
 

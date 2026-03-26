@@ -31,12 +31,6 @@ class _MobileContactScreenState extends State<MobileContactScreen> {
   String errorMessage = "Make sure all fields are filled";
   bool validEmail = false;
 
-  //a method to show the message
-  void _showMessage(String message) {
-    final snackBar = SnackBar(content: Text(message));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
   @override
   void initState() {
     // SVProgressHUD.dismiss();
@@ -105,7 +99,7 @@ class _MobileContactScreenState extends State<MobileContactScreen> {
               children: [
                 Text(
                   "Contact Me",
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).secondaryHeaderColor,
                       ),
@@ -115,7 +109,7 @@ class _MobileContactScreenState extends State<MobileContactScreen> {
                 ),
                 Text(
                   "Get In Touch",
-                  style: Theme.of(context).textTheme.headline4!.copyWith(
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
@@ -124,7 +118,7 @@ class _MobileContactScreenState extends State<MobileContactScreen> {
                 ),
                 Text(
                   "I am available for professional job offers and getting in touch is just a click away.",
-                  style: Theme.of(context).textTheme.bodyText1!,
+                  style: Theme.of(context).textTheme.bodyLarge!,
                 ),
                 SizedBox(
                   height: 50,
@@ -349,11 +343,11 @@ class _MobileContactScreenState extends State<MobileContactScreen> {
           Container(
             padding: EdgeInsets.all(4),
             width: double.infinity,
-            color: Theme.of(context).scaffoldBackgroundColor,
+            color: const Color(0xFF072B42),
             child: Center(
               child: Text(
                 "Copyright CJ 2024",
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       color: Colors.white,
                       fontSize: 14
                     ),
@@ -397,7 +391,7 @@ class ContactLinls extends StatelessWidget {
           child: Text(
             text!,
             overflow: TextOverflow.clip,
-            style: Theme.of(context).textTheme.bodyText1!.copyWith(
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   fontSize: 20,
                 ),
           ),
@@ -483,7 +477,7 @@ class CustTextField extends StatelessWidget {
       cursorColor: theme.primaryColor,
       textAlign: TextAlign.start,
       textAlignVertical: TextAlignVertical.top,
-      style: theme.textTheme.bodyText1,
+      style: theme.textTheme.bodyLarge,
       onChanged: onchanged,
       validator: validate,
     );

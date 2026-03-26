@@ -11,7 +11,7 @@ class DrawTriangleShape extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var path = Path();
     painter = Paint()
-      ..color = color.withOpacity(0.4)
+      ..color = color.withValues(alpha: 0.4)
       ..style = PaintingStyle.fill;
 
     path.moveTo(size.width / 2, 0);
@@ -44,12 +44,12 @@ class StarPainter extends CustomPainter {
 
     if (isFilled == true) {
       paint = Paint()
-        ..color = color.withOpacity(0.4)
+        ..color = color.withValues(alpha: 0.4)
         ..strokeWidth = 3
         ..style = PaintingStyle.fill;
     } else {
       paint = Paint()
-        ..color = color.withOpacity(0.4)
+        ..color = color.withValues(alpha: 0.4)
         ..strokeWidth = 3
         ..style = PaintingStyle.stroke;
     }
@@ -83,7 +83,7 @@ class Rectangle extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
-    paint.color = color.withOpacity(0.4);
+    paint.color = color.withValues(alpha: 0.4);
     if (isFilled != null) {
       paint.style = PaintingStyle.fill;
     } else {
@@ -111,7 +111,7 @@ class Circle extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
-    paint.color = color.withOpacity(0.4);
+    paint.color = color.withValues(alpha: 0.4);
     paint.style = PaintingStyle.fill;
     paint.strokeCap = StrokeCap.round;
     paint.strokeJoin = StrokeJoin.round;
@@ -139,8 +139,8 @@ class DrawCircleCircle extends CustomPainter {
     final paint1;
     final paint2;
 
-    paint1 = Paint()..color = color1.withOpacity(0.4);
-    paint2 = Paint()..color = color2.withOpacity(0.4);
+    paint1 = Paint()..color = color1.withValues(alpha: 0.4);
+    paint2 = Paint()..color = color2.withValues(alpha: 0.4);
 
     canvas.drawCircle(Offset(0.0, 0.0), 30, paint1);
     canvas.drawCircle(Offset(0.0, 0.0), 25, paint2);

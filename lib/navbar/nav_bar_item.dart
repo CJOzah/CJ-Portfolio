@@ -6,8 +6,8 @@ class NavBarItem extends StatelessWidget {
 
   const NavBarItem({
     Key? key,
-    @required this.text,
-    @required this.function,
+    required this.text,
+    required this.function,
   }) : super(key: key);
 
   @override
@@ -16,7 +16,7 @@ class NavBarItem extends StatelessWidget {
       onPressed: function!,
       child: Text(
         text!,
-        style: Theme.of(context).textTheme.subtitle1!.copyWith(
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
               fontWeight: FontWeight.bold,
             ),
       ),

@@ -41,13 +41,13 @@ class _MobileServicesScreenState extends State<MobileServicesScreen> {
                 children: [
                   Text(
                     "What i do",
-                    style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: Theme.of(context).secondaryHeaderColor,
                         ),
                   ),
                   Text(
                     "My Services",
-                    style: Theme.of(context).textTheme.headline5!,
+                    style: Theme.of(context).textTheme.headlineSmall!,
                   ),
                   SizedBox(
                     height: 50,
@@ -108,14 +108,14 @@ class _MobileServicesScreenState extends State<MobileServicesScreen> {
                           "Work Flow",
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle1!
+                              .titleMedium!
                               .copyWith(
                                 color: Theme.of(context).secondaryHeaderColor,
                               ),
                         ),
                         Text(
                           "My Work Process",
-                          style: Theme.of(context).textTheme.headline5!,
+                          style: Theme.of(context).textTheme.headlineSmall!,
                         ),
                         SizedBox(
                           height: 50,
@@ -357,7 +357,7 @@ class _FancyCardMobileState extends State<FancyCardMobile> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xff6f12e8).withOpacity(0.5),
+                        color: const Color(0xff6f12e8).withValues(alpha: 0.5),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -419,7 +419,7 @@ class _FancyCardMobileState extends State<FancyCardMobile> {
                               child: Text(
                                 isTapped ? "" : widget.body,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 17,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -524,7 +524,7 @@ class _FancyCardSmallMobileState extends State<FancyCardSmallMobile> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xff6f12e8).withOpacity(0.5),
+                        color: const Color(0xff6f12e8).withValues(alpha: 0.5),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -586,7 +586,7 @@ class _FancyCardSmallMobileState extends State<FancyCardSmallMobile> {
                               child: Text(
                                 isTapped ? "" : widget.body,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                   fontSize: 17,
                                   fontWeight: FontWeight.w400,
                                 ),

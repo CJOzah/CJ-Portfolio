@@ -44,19 +44,32 @@ class _RandomMovingShapeState extends State<RandomMovingShape>
   int minY = 5;
   int? rX, rY;
 
-  animateShapes() {
+  /// Starts a single random movement animation cycle.
+  void animateShapes() {
+    if (!mounted) {
+      return;
+    }
     rX = minX + random.nextInt(widget.maxX);
     rY = minY + random.nextInt(widget.maxY);
-    // print("rx $rX, ry $rY");
+    _controllerA?.dispose();
+    _controllerB?.dispose();
     _controllerA = AnimationController(
         vsync: this,
         lowerBound: rY!.toDouble() - 20,
         upperBound: rY!.toDouble(),
         duration: Duration(milliseconds: 5000));
     _controllerA!.addListener(() {
+      if (!mounted) {
+        return;
+      }
       setState(() {
         offset1 = _controllerA!.value.abs();
       });
+    });
+    _controllerA!.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _scheduleNextAnimation();
+      }
     });
     _controllerB = AnimationController(
         vsync: this,
@@ -64,6 +77,9 @@ class _RandomMovingShapeState extends State<RandomMovingShape>
         upperBound: rX!.toDouble(),
         duration: Duration(milliseconds: 5000));
     _controllerB!.addListener(() {
+      if (!mounted) {
+        return;
+      }
       setState(() {
         offset2 = _controllerB!.value.abs();
       });
@@ -73,8 +89,19 @@ class _RandomMovingShapeState extends State<RandomMovingShape>
     _controllerB!.forward();
   }
 
+  /// Delays and restarts the next movement cycle when still mounted.
+  void _scheduleNextAnimation() {
+    Future.delayed(Duration(milliseconds: 2000), () {
+      if (!mounted) {
+        return;
+      }
+      animateShapes();
+    });
+  }
+
   @override
   void initState() {
+    super.initState();
     offset1 = widget.minY.toDouble();
     offset2 = widget.minX.toDouble();
     // _controllerA = AnimationController(
@@ -97,29 +124,18 @@ class _RandomMovingShapeState extends State<RandomMovingShape>
     //     offset2 = _controllerB!.value;
     //   });
     // });
-
     animateShapes();
-
-    super.initState();
   }
 
   @override
   void dispose() {
-    _controllerA!.dispose();
-    _controllerB!.dispose();
+    _controllerA?.dispose();
+    _controllerB?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (offset2 == rX && offset1 == rY) {
-      // print("top $offset1, left $offset2");
-      setState(() {
-        Future.delayed(Duration(milliseconds: 2000))
-            .then((value) => animateShapes());
-        animateShapes();
-      });
-    }
     return AnimatedContainer(
       margin: EdgeInsets.only(top: offset1 + 10, left: offset2 + 10),
       curve: widget.curve,

@@ -31,7 +31,7 @@ class _MobileHomePageState extends State<MobileHomePage>   {
                 Expanded(
                     flex: 5,
                     child: Image.asset(
-                      "images/header.gif",
+                      "images/header.png",
                       fit: BoxFit.cover,
                     )),
                 Expanded(
@@ -47,7 +47,7 @@ class _MobileHomePageState extends State<MobileHomePage>   {
                         ),
                         Text(
                           "WELCOME TO MY WORLD",
-                          style: Theme.of(context).textTheme.subtitle1,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         SizedBox(
                           height: SizeConfig.sH! * 2,
@@ -55,14 +55,14 @@ class _MobileHomePageState extends State<MobileHomePage>   {
                         Text(
                           "Hey there,",
                           style:
-                              Theme.of(context).textTheme.headline3!.copyWith(
+                              Theme.of(context).textTheme.displaySmall!.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
                         Text(
                           "I'm CJ",
                           style:
-                              Theme.of(context).textTheme.headline3!.copyWith(
+                              Theme.of(context).textTheme.displaySmall!.copyWith(
                                     color: Theme.of(context).primaryColorLight,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -73,7 +73,7 @@ class _MobileHomePageState extends State<MobileHomePage>   {
                         Text(
                             "I'm a Professional Mobile/Web Developer and i love what i do",
                             style:
-                                Theme.of(context).textTheme.bodyText1!.copyWith(
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
                                       fontWeight: FontWeight.bold,
                                     )),
                         // Padding(
@@ -206,10 +206,10 @@ class _MobileHomePageState extends State<MobileHomePage>   {
             minX: SizeConfig.sW!.toInt() * 10,
             minY: SizeConfig.sH!.toInt() * 30,
             painter: Rectangle(
-              color: Colors.purple,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
             radius: BorderRadius.zero,
-            color: Colors.purple,
+            color: Theme.of(context).secondaryHeaderColor,
             curve: Curves.slowMiddle,
             maxY: SizeConfig.sH!.toInt() * 70,
             maxX: SizeConfig.sW!.toInt() * 100,
@@ -288,7 +288,7 @@ class SocialButton extends StatelessWidget {
         height: 40.0,
         width: 40.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
         child: InkWell(onTap: function, child: Icon(icon)),
       ),
@@ -316,7 +316,7 @@ class SkillsButton extends StatelessWidget {
         height: 40.0,
         width: 40.0,
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
         child: InkWell(onTap: function, child: Image.asset("images/$text")),
       ),
