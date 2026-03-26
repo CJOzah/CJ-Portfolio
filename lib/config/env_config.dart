@@ -33,12 +33,19 @@ class EnvConfig {
     _isLoaded = true;
   }
 
-  /// Returns the GitHub token from `.env` or fallback `--dart-define`.
+  /// Returns the GitHub token from `--dart-define` or fallback `.env`.
+  ///
+  /// Prioritizing `--dart-define` makes release/CI builds deterministic,
+  /// especially when `.env` is unavailable on the build machine.
   static String get githubToken {
+    final String tokenFromDefine = const String.fromEnvironment("GITHUB_TOKEN");
+    if (tokenFromDefine.trim().isNotEmpty) {
+      return tokenFromDefine.trim();
+    }
     final String? tokenFromEnv = _values["GITHUB_TOKEN"];
     if (tokenFromEnv != null && tokenFromEnv.trim().isNotEmpty) {
       return tokenFromEnv.trim();
     }
-    return const String.fromEnvironment("GITHUB_TOKEN");
+    return "";
   }
 }
