@@ -48,4 +48,21 @@ class EnvConfig {
     }
     return "";
   }
+
+  /// Returns the GitHub proxy endpoint from `--dart-define` or fallback `.env`.
+  ///
+  /// Example:
+  /// `https://your-domain.vercel.app/api/github-proxy`
+  static String get githubProxyUrl {
+    final String proxyFromDefine = const String.fromEnvironment("GITHUB_PROXY_URL");
+    if (proxyFromDefine.trim().isNotEmpty) {
+      return proxyFromDefine.trim();
+    }
+    final String? proxyFromEnv = _values["GITHUB_PROXY_URL"];
+    if (proxyFromEnv != null && proxyFromEnv.trim().isNotEmpty) {
+      return proxyFromEnv.trim();
+    }
+    return "";
+  }
+
 }

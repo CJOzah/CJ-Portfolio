@@ -17,6 +17,7 @@ class GithubRepos extends ChangeNotifier {
   final Map<String, List<_ReadmeSubProject>> _repoSubProjectsByFullName =
       <String, List<_ReadmeSubProject>>{};
   static const String _githubUsername = "CJOzah";
+  static const String _githubApiHost = "api.github.com";
 
   /// Fetches repositories from GitHub.
   ///
@@ -26,7 +27,8 @@ class GithubRepos extends ChangeNotifier {
   /// any public organization repos for orgs that username belongs to.
   Future<void> getGithubRepos() async {
     final String githubToken = EnvConfig.githubToken;
-    final bool useAuthenticatedRequest = githubToken.trim().isNotEmpty;
+    final bool useProxyAuth = EnvConfig.githubProxyUrl.trim().isNotEmpty;
+    final bool useAuthenticatedRequest = useProxyAuth || githubToken.trim().isNotEmpty;
 
     final Map<String, String> headers = {
       "Connection": "keep-alive",
@@ -35,7 +37,7 @@ class GithubRepos extends ChangeNotifier {
       "Accept": "application/vnd.github+json",
     };
 
-    if (useAuthenticatedRequest) {
+    if (useAuthenticatedRequest && !useProxyAuth) {
       headers["Authorization"] = "Bearer $githubToken";
     }
 
@@ -301,7 +303,23 @@ class GithubRepos extends ChangeNotifier {
   /// Executes GET request with standard timeout.
   Future<http.Response> _getWithTimeout(
       Uri url, Map<String, String> headers) async {
-    return http.get(url, headers: headers).timeout(const Duration(seconds: 60));
+    final Uri resolvedUrl = _resolveGithubRequestUrl(url);
+    return http
+        .get(resolvedUrl, headers: headers)
+        .timeout(const Duration(seconds: 60));
+  }
+
+  /// Routes GitHub API requests through an optional backend proxy.
+  Uri _resolveGithubRequestUrl(Uri url) {
+    final String proxyBaseUrl = EnvConfig.githubProxyUrl;
+    if (proxyBaseUrl.trim().isEmpty || url.host.toLowerCase() != _githubApiHost) {
+      return url;
+    }
+    final Uri proxyBaseUri = Uri.parse(proxyBaseUrl);
+    final Map<String, String> mergedQueryParams =
+        Map<String, String>.from(proxyBaseUri.queryParameters);
+    mergedQueryParams["url"] = url.toString();
+    return proxyBaseUri.replace(queryParameters: mergedQueryParams);
   }
 
   /// Fetches and caches the first README image URL for each repository.

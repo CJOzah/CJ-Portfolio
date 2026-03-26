@@ -29,10 +29,7 @@
 .packages
 .pub-cache/
 .pub/
-/build/
-
-# Web related
-web copy/main.dart.js
+/build/ 
 
 # Symbolication related
 app.*.symbols
