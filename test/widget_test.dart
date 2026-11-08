@@ -132,4 +132,20 @@ void main() {
     await tester.pumpWidget(const SizedBox()); // stops the auto-advance timer
     await tester.pump(const Duration(seconds: 1));
   });
+
+  test('magnetPull leans toward the cursor and stays clamped', () {
+    const size = Size(100, 40);
+    expect(magnetPull(const Offset(50, 20), size), Offset.zero);
+    expect(magnetPull(const Offset(60, 20), size).dx, closeTo(2.4, 0.001));
+    expect(magnetPull(const Offset(1000, -1000), size), const Offset(8, -8));
+  });
+
+  testWidgets('BrandLogo draw-in and StaggerIn both finish', (tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: Column(children: [BrandLogo(size: 40, drawIn: true), StaggerIn(index: 3, child: Text("done"))]),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text("done"), findsOneWidget);
+    expect(tester.widget<Opacity>(find.ancestor(of: find.text("done"), matching: find.byType(Opacity))).opacity, 1);
+  });
 }

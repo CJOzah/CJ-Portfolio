@@ -23,7 +23,7 @@ class PortfolioApp extends StatelessWidget {
           themeMode: context.watch<ThemeProvider>().themeMode,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          themeAnimationDuration: const Duration(milliseconds: 500),
+          themeAnimationDuration: Duration.zero, // HomePage runs its own circular wipe
           home: const HomePage(),
         ),
       );

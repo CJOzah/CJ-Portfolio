@@ -97,6 +97,7 @@ class _ProjectsSectionState extends State<ProjectsSection> {
               children: [
                 for (var i = 0; i < visible.length; i++)
                   Reveal(
+                    flip: true,
                     delay: Duration(milliseconds: 80 * (i % columns)),
                     child: _ProjectCard(visible[i]),
                   ),

@@ -24,6 +24,7 @@ class WorkSection extends StatelessWidget {
           children: [
             for (var i = 0; i < featured.length; i++)
               Reveal(
+                flip: true,
                 delay: Duration(milliseconds: 70 * i),
                 child: HoverLift(
                   onTap: () => showCaseStudy(context, featured, i),
@@ -175,8 +176,8 @@ class _CaseStudyState extends State<_CaseStudy> {
                               color: context.accentText,
                             )),
                         const SizedBox(height: 24),
-                        for (final h in r.highlights)
-                          Padding(
+                        for (final (i, h) in r.highlights.indexed)
+                          StaggerIn(index: i, child: Padding(
                             padding: const EdgeInsets.only(bottom: 14),
                             child: Text(h,
                                 style: context.text.bodyLarge!.copyWith(
@@ -184,7 +185,7 @@ class _CaseStudyState extends State<_CaseStudy> {
                                   height: 1.6,
                                   color: on.withValues(alpha: 0.78),
                                 )),
-                          ),
+                          )),
                         const SizedBox(height: 8),
                         Wrap(spacing: 8, runSpacing: 8, children: [
                           for (final t in r.tags)

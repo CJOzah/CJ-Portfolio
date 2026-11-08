@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +28,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   static const _labels = ["Home", "Work", "About", "Experience", "Services", "Contact"];
   static const _icons = [
     Icons.home_outlined,
@@ -38,6 +41,11 @@ class _HomePageState extends State<HomePage> {
   final _keys = List.generate(_labels.length, (_) => GlobalKey());
   final _scroll = ScrollController();
   final _active = ValueNotifier<int>(0);
+  final _pageKey = GlobalKey();
+  late final AnimationController _themeWipe =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 720));
+  ui.Image? _oldTheme;
+  Offset _wipeOrigin = Offset.zero;
   final _progress = ValueNotifier<double>(0);
 
   @override
@@ -66,6 +74,32 @@ class _HomePageState extends State<HomePage> {
     Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 900), curve: Curves.easeInOutCubic);
   }
 
+  /// Switches theme by wiping a circle of the new look out from [origin].
+  Future<void> _toggleTheme(Offset origin) async {
+    final theme = context.read<ThemeProvider>();
+    if (_oldTheme != null) return; // a wipe is already running
+    ui.Image? shot;
+    if (!MediaQuery.disableAnimationsOf(context)) {
+      try {
+        final boundary = _pageKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+        shot = await boundary.toImage(pixelRatio: MediaQuery.devicePixelRatioOf(context));
+      } catch (_) {
+        // No snapshot available: the theme still changes, just without the wipe.
+      }
+    }
+    if (!mounted) return;
+    if (shot == null) return theme.toggle();
+    setState(() {
+      _oldTheme = shot;
+      _wipeOrigin = origin;
+    });
+    theme.toggle();
+    await _themeWipe.forward(from: 0);
+    if (!mounted) return;
+    _oldTheme?.dispose();
+    setState(() => _oldTheme = null);
+  }
+
   void _openPalette() {
     final theme = context.read<ThemeProvider>();
     final messenger = ScaffoldMessenger.of(context);
@@ -90,7 +124,8 @@ class _HomePageState extends State<HomePage> {
       PaletteItem("Chat on WhatsApp", "Action", Icons.chat_outlined,
           () => openLink("https://wa.me/${Profile.whatsapp}")),
       PaletteItem(theme.isDarkMode ? "Switch to light mode" : "Switch to dark mode", "Action",
-          theme.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded, theme.toggle),
+          theme.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+          () => _toggleTheme(Offset(MediaQuery.sizeOf(context).width - 80, 36))),
       for (final s in socials)
         PaletteItem("Open ${s.label}", "Social", Icons.open_in_new_rounded, () => openLink(s.url)),
       for (final s in storePages)
@@ -102,6 +137,8 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _scroll.dispose();
     _active.dispose();
+    _themeWipe.dispose();
+    _oldTheme?.dispose();
     _progress.dispose();
     super.dispose();
   }
@@ -122,6 +159,7 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           endDrawer: context.isDesktop ? null : _MobileMenu(labels: _labels, active: _active, onTap: _goTo),
           body: Stack(children: [
+            RepaintBoundary(key: _pageKey, child: Stack(children: [
             SelectionArea(
               child: SingleChildScrollView(
                 controller: _scroll,
@@ -144,14 +182,30 @@ class _HomePageState extends State<HomePage> {
               top: 0,
               left: 0,
               right: 0,
-              child: _NavBar(
-                labels: _labels,
-                active: _active,
-                progress: _progress,
-                onTap: _goTo,
-                onSearch: _openPalette,
+              child: _DropIn(
+                child: _NavBar(
+                  labels: _labels,
+                  active: _active,
+                  progress: _progress,
+                  onTap: _goTo,
+                  onSearch: _openPalette,
+                  onToggleTheme: _toggleTheme,
+                ),
               ),
             ),
+            ])),
+            if (_oldTheme != null)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: AnimatedBuilder(
+                    animation: _themeWipe,
+                    builder: (_, __) => ClipPath(
+                      clipper: _WipeClipper(_wipeOrigin, Curves.easeInOutCubic.transform(_themeWipe.value)),
+                      child: RawImage(image: _oldTheme, fit: BoxFit.fill),
+                    ),
+                  ),
+                ),
+              ),
           ]),
         ),
       ),
@@ -165,12 +219,14 @@ class _NavBar extends StatelessWidget {
   final ValueNotifier<double> progress;
   final ValueChanged<int> onTap;
   final VoidCallback onSearch;
+  final ValueChanged<Offset> onToggleTheme;
   const _NavBar({
     required this.labels,
     required this.active,
     required this.progress,
     required this.onTap,
     required this.onSearch,
+    required this.onToggleTheme,
   });
 
   @override
@@ -197,7 +253,7 @@ class _NavBar extends StatelessWidget {
             child: Row(children: [
               MouseRegion(
                 cursor: SystemMouseCursors.click,
-                child: GestureDetector(onTap: () => onTap(0), child: const BrandLockup()),
+                child: GestureDetector(onTap: () => onTap(0), child: const BrandLockup(drawIn: true)),
               ),
               const Spacer(),
               if (context.isDesktop)
@@ -215,7 +271,7 @@ class _NavBar extends StatelessWidget {
                 onPressed: onSearch,
                 icon: const Icon(Icons.search_rounded, size: 20),
               ),
-              const _ThemeToggle(),
+              _ThemeToggle(onToggle: onToggleTheme),
               if (!context.isDesktop)
                 Builder(
                   builder: (ctx) => IconButton(
@@ -277,15 +333,50 @@ class _NavItemState extends State<_NavItem> {
   }
 }
 
+/// Slides its child down from above the screen on first load.
+class _DropIn extends StatelessWidget {
+  final Widget child;
+  const _DropIn({required this.child});
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+        tween: Tween(begin: MediaQuery.disableAnimationsOf(context) ? 0 : -1, end: 0),
+        duration: const Duration(milliseconds: 700),
+        curve: Curves.easeOutQuint,
+        child: child,
+        builder: (_, y, child) => FractionalTranslation(translation: Offset(0, y), child: child),
+      );
+}
+
+/// Keeps everything outside a growing circle, so the old theme is wiped away.
+class _WipeClipper extends CustomClipper<Path> {
+  final Offset origin;
+  final double t;
+  _WipeClipper(this.origin, this.t);
+
+  @override
+  Path getClip(Size size) => Path()
+    ..fillType = PathFillType.evenOdd
+    ..addRect(Offset.zero & size)
+    ..addOval(Rect.fromCircle(center: origin, radius: size.longestSide * 1.25 * t));
+
+  @override
+  bool shouldReclip(_WipeClipper old) => old.t != t || old.origin != origin;
+}
+
 class _ThemeToggle extends StatelessWidget {
-  const _ThemeToggle();
+  final ValueChanged<Offset> onToggle;
+  const _ThemeToggle({required this.onToggle});
 
   @override
   Widget build(BuildContext context) {
     final theme = context.watch<ThemeProvider>();
     return IconButton(
       tooltip: theme.isDarkMode ? "Light mode" : "Dark mode",
-      onPressed: theme.toggle,
+      onPressed: () {
+        final box = context.findRenderObject() as RenderBox;
+        onToggle(box.localToGlobal(box.size.center(Offset.zero)));
+      },
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 400),
         transitionBuilder: (child, a) => RotationTransition(

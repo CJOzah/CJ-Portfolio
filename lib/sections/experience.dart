@@ -72,8 +72,7 @@ class _CareerTimeline extends StatelessWidget {
       return VisibleBuilder(
         builder: (context, seen) => TweenAnimationBuilder<double>(
           tween: Tween(end: seen ? 1 : 0),
-          duration: Duration(milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 1300),
-          curve: Curves.easeOutQuint,
+          duration: Duration(milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 1700),
           builder: (context, grow, _) => SizedBox(
             height: 34 + experience.length * _rowHeight,
             child: Stack(children: [
@@ -99,7 +98,9 @@ class _CareerTimeline extends StatelessWidget {
     final r = experience[i];
     final active = i == selected;
     final left = x(r.from);
-    final barWidth = (x(r.to ?? now) - left) * grow;
+    final step = 0.48 / experience.length; // keeps every interval inside 0..1 however many roles exist
+    final rowGrow = Interval(i * step, 0.52 + i * step, curve: Curves.easeOutQuint).transform(grow);
+    final barWidth = (x(r.to ?? now) - left) * rowGrow;
     final labelInside = left + x(r.to ?? now) - x(r.from) + _labelRoom > w;
     final label = Text(
       r.company,
@@ -200,8 +201,8 @@ class _RoleCard extends StatelessWidget {
           _Meta(Icons.place_outlined, role.location),
         ]),
         const SizedBox(height: 24),
-        for (final h in role.highlights)
-          Padding(
+        for (final (i, h) in role.highlights.indexed)
+          StaggerIn(index: i, child: Padding(
             padding: const EdgeInsets.only(bottom: 14),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Padding(
@@ -214,7 +215,7 @@ class _RoleCard extends StatelessWidget {
                     style: context.text.bodyLarge!.copyWith(fontSize: 15, height: 1.6, color: on.withValues(alpha: 0.75))),
               ),
             ]),
-          ),
+          )),
         const SizedBox(height: 10),
         Wrap(spacing: 8, runSpacing: 8, children: [
           for (final t in role.tags)

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
@@ -60,7 +63,10 @@ class _VisibleBuilderState extends State<VisibleBuilder> with _FirstVisible {
 class Reveal extends StatefulWidget {
   final Widget child;
   final Duration delay;
-  const Reveal({super.key, required this.child, this.delay = Duration.zero});
+
+  /// Swing up in 3D as it arrives (for cards).
+  final bool flip;
+  const Reveal({super.key, required this.child, this.delay = Duration.zero, this.flip = false});
 
   @override
   State<Reveal> createState() => _RevealState();
@@ -86,12 +92,142 @@ class _RevealState extends State<Reveal> with SingleTickerProviderStateMixin, _F
     return AnimatedBuilder(
       animation: curve,
       child: widget.child,
-      builder: (_, child) => Opacity(
-        opacity: curve.value,
-        child: Transform.translate(offset: Offset(0, 28 * (1 - curve.value)), child: child),
+      builder: (_, child) {
+        final rest = 1 - curve.value;
+        return Opacity(
+          opacity: curve.value,
+          child: ImageFiltered(
+            // Same widget tree when finished, so children keep their state.
+            enabled: rest > 0.01,
+            imageFilter: ImageFilter.blur(sigmaX: 7 * rest, sigmaY: 7 * rest),
+            child: Transform(
+              alignment: Alignment.bottomCenter,
+              transform: Matrix4.identity()
+                // Perspective only while flipping: left on, it would stack onto 3D children at rest.
+                ..setEntry(3, 2, widget.flip && rest > 0 ? 0.0014 : 0)
+                ..translateByDouble(0, 28 * rest, 0, 1)
+                ..rotateX(widget.flip ? 0.42 * rest : 0)
+                ..scaleByDouble(1 - 0.03 * rest, 1 - 0.03 * rest, 1, 1),
+              child: child,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Fades and slides its child in when it mounts, after a short index-based delay.
+class StaggerIn extends StatelessWidget {
+  static const _stepMs = 55, _riseMs = 420;
+  final int index;
+  final Widget child;
+  const StaggerIn({super.key, required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    final total = _riseMs + _stepMs * index;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: total),
+      child: child,
+      builder: (_, t, child) {
+        final v = Interval(_stepMs * index / total, 1, curve: Curves.easeOutCubic).transform(t);
+        return Opacity(opacity: v, child: Transform.translate(offset: Offset(18 * (1 - v), 0), child: child));
+      },
+    );
+  }
+}
+
+/// How far a magnetic element leans toward the cursor; [local] is inside a box of [size].
+Offset magnetPull(Offset local, Size size, {double strength = 0.24, double max = 8}) {
+  final x = (local.dx - size.width / 2) * strength;
+  final y = (local.dy - size.height / 2) * strength;
+  return Offset(x.clamp(-max, max), y.clamp(-max, max));
+}
+
+/// Leans toward the cursor while hovered, then springs back.
+class Magnetic extends StatefulWidget {
+  final Widget child;
+  const Magnetic({super.key, required this.child});
+
+  @override
+  State<Magnetic> createState() => _MagneticState();
+}
+
+class _MagneticState extends State<Magnetic> {
+  Offset _pull = Offset.zero;
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context)) return widget.child;
+    return MouseRegion(
+      onHover: (e) => setState(() => _pull = magnetPull(e.localPosition, (context.findRenderObject() as RenderBox).size)),
+      onExit: (_) => setState(() => _pull = Offset.zero),
+      child: TweenAnimationBuilder<Offset>(
+        tween: Tween(end: _pull),
+        duration: Duration(milliseconds: _pull == Offset.zero ? 420 : 140),
+        curve: _pull == Offset.zero ? Curves.elasticOut : Curves.easeOut,
+        child: widget.child,
+        builder: (_, o, child) => Transform.translate(offset: o, child: child),
       ),
     );
   }
+}
+
+/// A band of light that sweeps across its child every few seconds while on screen.
+class _Sheen extends StatefulWidget {
+  final Widget child;
+  const _Sheen({required this.child});
+
+  @override
+  State<_Sheen> createState() => _SheenState();
+}
+
+class _SheenState extends State<_Sheen> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1300));
+  Timer? _timer;
+
+  void _sweep() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box != null && box.attached && box.localToGlobal(Offset.zero).dy > 0) _c.forward(from: 0);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 1700), () {
+      if (!mounted) return;
+      _sweep();
+      _timer = Timer.periodic(const Duration(seconds: 6), (_) => _sweep());
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+        animation: _c,
+        child: widget.child,
+        builder: (_, child) {
+          final p = Curves.easeInOut.transform(_c.value);
+          return ShaderMask(
+            blendMode: BlendMode.srcATop,
+            shaderCallback: (r) => LinearGradient(
+              begin: Alignment(-3 + 6 * p, 0),
+              end: Alignment(-1 + 6 * p, 0),
+              colors: [Colors.white.withValues(alpha: 0), Colors.white.withValues(alpha: 0.65), Colors.white.withValues(alpha: 0)],
+            ).createShader(r),
+            child: child,
+          );
+        },
+      );
 }
 
 /// Headline whose words rise out of a mask one after another.
@@ -150,10 +286,12 @@ class _WordRevealState extends State<WordReveal> with SingleTickerProviderStateM
                     clipBehavior: _c.isCompleted || still ? Clip.none : Clip.hardEdge,
                     child: FractionalTranslation(
                       translation: Offset(0, 1.05 * (1 - t)),
-                      child: Text(
-                        _words[i],
-                        style: accented ? widget.style.copyWith(color: widget.accent) : widget.style,
-                      ),
+                      child: accented && !still
+                          ? _Sheen(child: Text(_words[i], style: widget.style.copyWith(color: widget.accent)))
+                          : Text(
+                              _words[i],
+                              style: accented ? widget.style.copyWith(color: widget.accent) : widget.style,
+                            ),
                     ),
                   );
                 },

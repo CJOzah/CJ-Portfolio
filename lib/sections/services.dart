@@ -17,6 +17,7 @@ class ServicesSection extends StatelessWidget {
             children: [
               for (var i = 0; i < services.length; i++)
                 Reveal(
+                  flip: true,
                   delay: Duration(milliseconds: 80 * i),
                   child: HoverLift(child: Panel(child: _ServiceBlock(services[i]))),
                 ),

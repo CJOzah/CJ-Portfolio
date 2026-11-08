@@ -106,7 +106,7 @@ class _AppInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final on = context.colors.onSurface;
     final live = app.storeUrl != null;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+    final parts = <Widget>[
       Row(children: [
         _AppIcon(app, size: 64),
         const SizedBox(width: 16),
@@ -151,6 +151,9 @@ class _AppInfo extends StatelessWidget {
           const SizedBox(width: 8),
           Text("In development", style: context.text.titleSmall!.copyWith(color: context.accentText)),
         ]),
+    ];
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+      for (final (i, part) in parts.indexed) StaggerIn(index: i, child: part),
     ]);
   }
 }
@@ -196,25 +199,32 @@ class _PhoneFan extends StatelessWidget {
             semanticLabel: "${app.name} screenshot ${i + 1}",
           ),
         );
-    return Stack(alignment: Alignment.center, children: [
-      if (app.shots > 1)
-        Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..translateByDouble(-spread - shift, 20, 0, 1)
-            ..rotateZ(-0.09),
-          child: phone(1, side),
-        ),
-      if (app.shots > 2)
-        Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.identity()
-            ..translateByDouble(spread, 20, 0, 1)
-            ..rotateZ(0.09),
-          child: phone(2, side),
-        ),
-      Transform.translate(offset: Offset(shift, 0), child: phone(0, front)),
-    ]);
+    final still = MediaQuery.disableAnimationsOf(context);
+    // Side phones are dealt out from behind the front one, with a little overshoot.
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: still ? 1 : 0, end: 1),
+      duration: const Duration(milliseconds: 760),
+      curve: Curves.easeOutBack,
+      builder: (_, t, __) => Stack(alignment: Alignment.center, children: [
+        if (app.shots > 1)
+          Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..translateByDouble((-spread - shift) * t, 20 * t, 0, 1)
+              ..rotateZ(-0.09 * t),
+            child: phone(1, side),
+          ),
+        if (app.shots > 2)
+          Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..translateByDouble(spread * t, 20 * t, 0, 1)
+              ..rotateZ(0.09 * t),
+            child: phone(2, side),
+          ),
+        Transform.translate(offset: Offset(shift, 0), child: phone(0, front)),
+      ]),
+    );
   }
 }
 
@@ -325,7 +335,17 @@ class _DockIcon extends StatelessWidget {
             onTap: onTap,
             borderRadius: BorderRadius.circular(size * 0.23),
             child: Stack(clipBehavior: Clip.none, alignment: Alignment.bottomCenter, children: [
-              _AppIcon(app, size: size),
+              // Hops like a launching dock icon whenever it becomes the selected app.
+              TweenAnimationBuilder<double>(
+                key: ValueKey(active),
+                tween: Tween(begin: active && !MediaQuery.disableAnimationsOf(context) ? 0 : 1, end: 1),
+                duration: const Duration(milliseconds: 620),
+                builder: (_, t, child) => Transform.translate(
+                  offset: Offset(0, -size * 0.26 * math.sin(t * math.pi * 2).abs() * (1 - t)),
+                  child: child,
+                ),
+                child: _AppIcon(app, size: size),
+              ),
               if (active)
                 Positioned(
                   bottom: -9,

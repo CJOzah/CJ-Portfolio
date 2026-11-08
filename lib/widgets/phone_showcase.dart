@@ -100,7 +100,11 @@ class _PhoneShowcaseState extends State<PhoneShowcase> with SingleTickerProvider
         },
       );
 
-  Widget _device(int index, double t) => MouseRegion(
+  Widget _device(int index, double t) {
+    final float = _still ? 0.0 : math.sin(_c.value * 2 * math.pi * 6) * 6;
+    final pos = _position;
+    final scrolled = _still || pos == null || !pos.hasPixels ? 0.0 : (pos.pixels / 700).clamp(0.0, 1.0);
+    return MouseRegion(
         onHover: (e) {
           final size = (context.findRenderObject() as RenderBox).size;
           setState(() => _tilt = Offset(e.localPosition.dx / size.width * 2 - 1, e.localPosition.dy / size.height * 2 - 1));
@@ -114,8 +118,9 @@ class _PhoneShowcaseState extends State<PhoneShowcase> with SingleTickerProvider
             alignment: Alignment.center,
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.0011)
-              ..rotateX(-o.dy * 0.10)
-              ..rotateY(-0.16 + o.dx * 0.14),
+              ..translateByDouble(0, float - 60 * scrolled, 0, 1)
+              ..rotateX(-o.dy * 0.10 + 0.2 * scrolled)
+              ..rotateY(-0.16 + o.dx * 0.14 + 0.4 * scrolled),
             child: child,
           ),
           child: RepaintBoundary(
@@ -127,6 +132,7 @@ class _PhoneShowcaseState extends State<PhoneShowcase> with SingleTickerProvider
           ),
         ),
       );
+  }
 
   Widget _frame(int index, double t) => Container(
         width: widget.width,

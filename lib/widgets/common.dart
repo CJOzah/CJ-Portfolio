@@ -105,7 +105,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
   bool _hover = false;
 
   @override
-  Widget build(BuildContext context) => FilledButton.icon(
+  Widget build(BuildContext context) => Magnetic(child: FilledButton.icon(
         onPressed: widget.onPressed,
         onHover: (v) => setState(() => _hover = v),
         icon: AnimatedSlide(
@@ -122,7 +122,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-      );
+      ));
 }
 
 class GhostButton extends StatelessWidget {
@@ -132,7 +132,7 @@ class GhostButton extends StatelessWidget {
   const GhostButton({super.key, required this.label, required this.icon, required this.onPressed});
 
   @override
-  Widget build(BuildContext context) => OutlinedButton.icon(
+  Widget build(BuildContext context) => Magnetic(child: OutlinedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 18),
         label: Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
@@ -142,7 +142,7 @@ class GhostButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           side: BorderSide(color: context.colors.onSurface.withValues(alpha: 0.2)),
         ),
-      );
+      ));
 }
 
 class SocialRow extends StatelessWidget {
@@ -171,7 +171,11 @@ class _SocialIconState extends State<_SocialIcon> {
     final on = context.colors.onSurface;
     return Tooltip(
       message: widget.social.label,
-      child: MouseRegion(
+      child: AnimatedScale(
+        scale: _hover && !MediaQuery.disableAnimationsOf(context) ? 1.14 : 1,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutBack,
+        child: MouseRegion(
         cursor: SystemMouseCursors.click,
         onEnter: (_) => setState(() => _hover = true),
         onExit: (_) => setState(() => _hover = false),
@@ -191,6 +195,7 @@ class _SocialIconState extends State<_SocialIcon> {
             ),
           ),
         ),
+      ),
       ),
     );
   }
