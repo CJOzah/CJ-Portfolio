@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B3A5B"/>
+      <stop offset="1" stop-color="#021624"/>
+    </linearGradient>
+    <linearGradient id="fire" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFC069"/>
+      <stop offset="0.5" stop-color="#F2842F"/>
+      <stop offset="1" stop-color="#E4572E"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <rect x="6" y="6" width="500" height="500" rx="110" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="4"/>
+  <!-- C: 280deg arc, open on the right -->
+  <path d="M354.05 173.72 A128 128 0 1 0 354.05 338.28" fill="none" stroke="url(#fire)" stroke-width="44" stroke-linecap="round"/>
+  <!-- J: stem + hook -->
+  <path d="M290 190 V286 A40 40 0 0 1 210 286" fill="none" stroke="#F8F9FA" stroke-width="40" stroke-linecap="round"/>
+  <!-- caret -->
+  <rect x="358" y="212" width="28" height="88" rx="10" fill="url(#fire)"/>
+</svg>

@@ -1,30 +1,38 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:canaan_portfolio/widgets/brand_logo.dart';
+import 'package:canaan_portfolio/widgets/effects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:canaan_portfolio/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(Canaan());
+  testWidgets('Typewriter types, then rotates to the next phrase', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: Typewriter(phrases: ["ab", "cd"])));
+    String shown() => tester.widget<Text>(find.byType(Text)).data!;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pump(const Duration(milliseconds: 70));
+    await tester.pump(const Duration(milliseconds: 70));
+    expect(shown(), "ab");
+    // pause, delete 2 chars, switch phrase, type one char (35ms steps)
+    await tester.pump(const Duration(milliseconds: 1600));
+    for (var i = 0; i < 3; i++) {
+      await tester.pump(const Duration(milliseconds: 35));
+    }
+    expect(shown(), "c");
+    await tester.pump(const Duration(milliseconds: 70));
+    expect(shown(), "cd");
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('BrandLogo animates in without errors', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: Center(child: BrandLogo(size: 120, animateIn: true))));
+    await tester.pump(const Duration(milliseconds: 1500));
+    expect(find.bySemanticsLabel("CJ logo"), findsOneWidget);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('Marquee lays out inside an unbounded Column', (tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: SingleChildScrollView(child: Column(children: [Marquee(children: [Text("Flutter"), Text("Dart")])])),
+    ));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(tester.takeException(), isNull);
+    expect(find.text("Flutter"), findsWidgets);
   });
 }

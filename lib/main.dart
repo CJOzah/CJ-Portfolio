@@ -1,46 +1,30 @@
-
-
-import 'package:canaan_portfolio/github_api.dart';
-import 'package:canaan_portfolio/config/env_config.dart';
-import 'package:canaan_portfolio/screens/home.dart';
-import 'package:canaan_portfolio/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-// int? isviewed;
-Future<void> main() async {
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-  ));
-  WidgetsFlutterBinding.ensureInitialized();
-  await EnvConfig.load();
-  runApp(Canaan());
-}
+import 'data/portfolio_data.dart';
+import 'github_api.dart';
+import 'home_page.dart';
+import 'theme/app_theme.dart';
 
-class Canaan extends StatelessWidget {
-  static String title = "RentalStop";
-  // This widget is the root of your application.
+void main() => runApp(const PortfolioApp());
+
+class PortfolioApp extends StatelessWidget {
+  const PortfolioApp({super.key});
+
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => ThemeProvider()),
-          ChangeNotifierProvider(
-            create: (context) => GithubRepos(),
-          ),
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => GithubRepos()),
         ],
-        builder: (context, _) {
-          final themeProvider = Provider.of<ThemeProvider>(context);
-
-          return MaterialApp(
-              themeMode: themeProvider.themeMode,
-              theme: MyThemes.darkTheme,
-              darkTheme: MyThemes.darkTheme,
-              initialRoute: Home.id,
-              debugShowCheckedModeBanner: false,
-              routes: {
-                Home.id: (context) => Home(),
-              });
-        },
+        builder: (context, _) => MaterialApp(
+          title: "${Profile.name} · ${Profile.tagline}",
+          debugShowCheckedModeBanner: false,
+          themeMode: context.watch<ThemeProvider>().themeMode,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeAnimationDuration: const Duration(milliseconds: 500),
+          home: const HomePage(),
+        ),
       );
 }
