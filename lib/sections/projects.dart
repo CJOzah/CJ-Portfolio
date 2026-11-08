@@ -1,19 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../data/portfolio_data.dart';
-import '../github_api.dart';
-import '../github_model.dart';
+import '../github/project.dart';
+import '../github/projects_store.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/effects.dart';
 
+const _clientFilter = "Client work";
+
 class ProjectsSection extends StatefulWidget {
-  final Future<void> loading;
-  const ProjectsSection({super.key, required this.loading});
+  const ProjectsSection({super.key});
 
   @override
   State<ProjectsSection> createState() => _ProjectsSectionState();
@@ -26,89 +26,109 @@ class _ProjectsSectionState extends State<ProjectsSection> {
 
   @override
   Widget build(BuildContext context) {
-    final repos = context.watch<GithubRepos>();
-    final all = repos.getGithubRepo();
+    final store = context.watch<ProjectsStore>();
+    final all = store.projects;
 
-    // Top languages by repo count become filter chips.
+    // "Client work" (org apps) + top languages become filter chips.
     final counts = <String, int>{};
-    for (final r in all) {
-      final lang = r.language;
-      if (lang != null) counts[lang] = (counts[lang] ?? 0) + 1;
+    for (final p in all) {
+      if (p.language != null) counts[p.language!] = (counts[p.language!] ?? 0) + 1;
     }
-    final languages = ["All", ...(counts.keys.toList()..sort((a, b) => counts[b]!.compareTo(counts[a]!))).take(6)];
-    final filtered = _filter == "All" ? all : all.where((r) => r.language == _filter).toList();
+    final filters = [
+      "All",
+      if (all.any((p) => p.isOrg)) _clientFilter,
+      ...(counts.keys.toList()..sort((a, b) => counts[b]!.compareTo(counts[a]!))).take(5),
+    ];
+    final filtered = switch (_filter) {
+      "All" => all,
+      _clientFilter => all.where((p) => p.isOrg).toList(),
+      _ => all.where((p) => p.language == _filter).toList(),
+    };
     final visible = _showAll ? filtered : filtered.take(_pageSize).toList();
     final columns = context.isDesktop ? 3 : (context.isMobile ? 1 : 2);
 
     return Section(
       child: Column(children: [
-        const SectionHeader(
+        SectionHeader(
           eyebrow: "What I've built",
-          title: "Featured projects",
-          subtitle: "Pulled live from GitHub — apps, packages and experiments.",
+          title: "Recent apps",
+          subtitle: store.syncedAt == null
+              ? "Pulled live from GitHub: my apps and work for the teams I've joined."
+              : "Synced from GitHub ${_ago(store.syncedAt!)}: my apps and work for the teams I've joined.",
         ),
-        FutureBuilder<void>(
-          future: widget.loading,
-          builder: (context, snap) {
-            if (all.isEmpty && snap.connectionState != ConnectionState.done) {
-              return _Skeleton(columns: columns);
-            }
-            if (all.isEmpty) return const _EmptyState();
-            return Column(children: [
-              Reveal(
-                child: Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    for (final l in languages)
-                      ChoiceChip(
-                        label: Text(l == "All" ? "All (${all.length})" : l),
-                        selected: _filter == l,
-                        showCheckmark: false,
-                        onSelected: (_) => setState(() {
-                          _filter = l;
-                          _showAll = false;
-                        }),
-                        selectedColor: Brand.orange,
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: _filter == l ? Colors.white : context.colors.onSurface,
-                        ),
-                        shape: const StadiumBorder(),
-                        side: BorderSide(color: context.colors.onSurface.withValues(alpha: 0.12)),
-                      ),
-                  ],
-                ),
+        if (store.loading)
+          _Skeleton(columns: columns)
+        else if (all.isEmpty)
+          const _EmptyState()
+        else ...[
+          Reveal(
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
+              children: [
+                for (final f in filters)
+                  ChoiceChip(
+                    label: Text(f == "All" ? "All (${all.length})" : f),
+                    avatar: f == _clientFilter
+                        ? Icon(Icons.apartment_rounded,
+                            size: 16, color: _filter == f ? Colors.white : Brand.orange)
+                        : null,
+                    selected: _filter == f,
+                    showCheckmark: false,
+                    onSelected: (_) => setState(() {
+                      _filter = f;
+                      _showAll = false;
+                    }),
+                    selectedColor: Brand.orange,
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: _filter == f ? Colors.white : context.colors.onSurface,
+                    ),
+                    shape: const StadiumBorder(),
+                    side: BorderSide(color: context.colors.onSurface.withValues(alpha: 0.12)),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 350),
+            child: _CardGrid(
+              key: ValueKey("$_filter$_showAll"),
+              columns: columns,
+              children: [
+                for (var i = 0; i < visible.length; i++)
+                  Reveal(
+                    delay: Duration(milliseconds: 80 * (i % columns)),
+                    child: _ProjectCard(visible[i]),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+          Wrap(spacing: 16, runSpacing: 16, alignment: WrapAlignment.center, children: [
+            if (filtered.length > _pageSize)
+              GhostButton(
+                label: _showAll ? "Show less" : "Show all ${filtered.length}",
+                icon: _showAll ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                onPressed: () => setState(() => _showAll = !_showAll),
               ),
-              const SizedBox(height: 40),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 350),
-                child: _CardGrid(
-                  key: ValueKey("$_filter$_showAll"),
-                  columns: columns,
-                  children: [
-                    for (var i = 0; i < visible.length; i++)
-                      Reveal(
-                        delay: Duration(milliseconds: 80 * (i % columns)),
-                        child: _ProjectCard(visible[i]),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-              if (filtered.length > _pageSize)
-                GhostButton(
-                  label: _showAll ? "Show less" : "Show all ${filtered.length}",
-                  icon: _showAll ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-                  onPressed: () => setState(() => _showAll = !_showAll),
-                ),
-            ]);
-          },
-        ),
+            for (final s in storePages)
+              GhostButton(label: s.label, icon: Icons.shop_rounded, onPressed: () => openLink(s.url)),
+          ]),
+        ],
       ]),
     );
   }
+}
+
+String _ago(DateTime t) {
+  final d = DateTime.now().difference(t);
+  if (d.inMinutes < 60) return "just now";
+  if (d.inHours < 24) return "${d.inHours}h ago";
+  if (d.inDays < 30) return "${d.inDays}d ago";
+  return "on ${t.year}-${t.month.toString().padLeft(2, "0")}-${t.day.toString().padLeft(2, "0")}";
 }
 
 class _CardGrid extends StatelessWidget {
@@ -128,100 +148,229 @@ class _CardGrid extends StatelessWidget {
       });
 }
 
+class _Cover extends StatelessWidget {
+  final Project project;
+  const _Cover(this.project);
+
+  @override
+  Widget build(BuildContext context) => Hero(
+        tag: "project-${project.id}",
+        child: project.image == null
+            ? _Placeholder(title: project.title)
+            : CachedNetworkImage(
+                imageUrl: project.image!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                placeholder: (_, __) => _Placeholder(title: project.title),
+                errorWidget: (_, __, ___) => _Placeholder(title: project.title),
+              ),
+      );
+}
+
 class _ProjectCard extends StatelessWidget {
-  final GithubRepo repo;
-  const _ProjectCard(this.repo);
+  final Project project;
+  const _ProjectCard(this.project);
 
   @override
   Widget build(BuildContext context) {
-    final api = context.read<GithubRepos>();
-    final title = api.getRepoProjectHeading(repo);
-    final image = api.getRepoReadmeHeaderImage(repo);
-    final isPrivate = (repo.private ?? false) || api.isInvitedRepo(repo);
     final on = context.colors.onSurface;
-
-    return HoverLift(
-      onTap: () => openLink(api.getRepoProjectUrl(repo)),
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: context.isDark ? Colors.white.withValues(alpha: 0.035) : Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: on.withValues(alpha: 0.08)),
+    return Semantics(
+      button: true,
+      label: "${project.title}: open details",
+      child: HoverLift(
+        onTap: () => showProjectDetail(context, project),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: context.isDark ? Colors.white.withValues(alpha: 0.035) : Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: on.withValues(alpha: 0.08)),
+          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Stack(fit: StackFit.expand, children: [
+                _Cover(project),
+                if (project.isOrg || project.isPrivate)
+                  Positioned(left: 14, top: 14, child: _OwnerBadge(project)),
+              ]),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(project.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.titleLarge!.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 66,
+                  child: Text(
+                    project.summary,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.text.bodyMedium!.copyWith(height: 1.6, color: on.withValues(alpha: 0.65)),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                _MetaRow(project),
+              ]),
+            ),
+          ]),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: image == null
-                ? _Placeholder(title: title)
-                : CachedNetworkImage(
-                    imageUrl: image,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => _Placeholder(title: title),
-                    errorWidget: (_, __, ___) => _Placeholder(title: title),
-                  ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Expanded(
-                  child: Text(title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.text.titleLarge!.copyWith(fontWeight: FontWeight.w700)),
-                ),
-                if (!isPrivate && repo.htmlUrl != null)
-                  IconButton(
-                    tooltip: "View source",
-                    onPressed: () => openLink(repo.htmlUrl!),
-                    icon: FaIcon(FontAwesomeIcons.github, size: 18, color: on.withValues(alpha: 0.7)),
-                  ),
-              ]),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 66,
-                child: Text(
-                  api.getRepoProjectDescription(repo),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.text.bodyMedium!.copyWith(height: 1.6, color: on.withValues(alpha: 0.65)),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Row(children: [
-                if (repo.language != null) ...[
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: const BoxDecoration(shape: BoxShape.circle, gradient: Brand.fire),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(repo.language!, style: context.text.labelMedium),
-                  const SizedBox(width: 16),
-                ],
-                if ((repo.stargazersCount ?? 0) > 0) ...[
-                  Icon(Icons.star_rounded, size: 16, color: on.withValues(alpha: 0.6)),
-                  const SizedBox(width: 4),
-                  Text("${repo.stargazersCount}", style: context.text.labelMedium),
-                ],
-                const Spacer(),
-                if (isPrivate)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Brand.orange.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text("Client work",
-                        style: context.text.labelSmall!.copyWith(color: Brand.orange, fontWeight: FontWeight.w700)),
-                  ),
-                const SizedBox(width: 8),
-                const Icon(Icons.north_east_rounded, size: 18, color: Brand.orange),
-              ]),
-            ]),
-          ),
+      ),
+    );
+  }
+}
+
+class _OwnerBadge extends StatelessWidget {
+  final Project project;
+  const _OwnerBadge(this.project);
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.55),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(project.isOrg ? Icons.apartment_rounded : Icons.lock_outline_rounded,
+              size: 13, color: Brand.amber),
+          const SizedBox(width: 6),
+          Text(project.isOrg ? (project.owner ?? "Client work") : "Client work",
+              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
         ]),
+      );
+}
+
+class _MetaRow extends StatelessWidget {
+  final Project project;
+  final bool hint;
+  const _MetaRow(this.project, {this.hint = true});
+
+  @override
+  Widget build(BuildContext context) {
+    final on = context.colors.onSurface;
+    return Row(children: [
+      if (project.language != null) ...[
+        Container(
+          width: 10,
+          height: 10,
+          decoration: const BoxDecoration(shape: BoxShape.circle, gradient: Brand.fire),
+        ),
+        const SizedBox(width: 6),
+        Text(project.language!, style: context.text.labelMedium),
+        const SizedBox(width: 16),
+      ],
+      if (project.stars > 0) ...[
+        Icon(Icons.star_rounded, size: 16, color: on.withValues(alpha: 0.6)),
+        const SizedBox(width: 4),
+        Text("${project.stars}", style: context.text.labelMedium),
+      ],
+      if (hint) ...[
+        const Spacer(),
+        Text("Details", style: context.text.labelMedium!.copyWith(color: Brand.orange)),
+        const SizedBox(width: 4),
+        const Icon(Icons.north_east_rounded, size: 16, color: Brand.orange),
+      ],
+    ]);
+  }
+}
+
+/// Full-screen-ish detail sheet with a hero image transition.
+Future<void> showProjectDetail(BuildContext context, Project p) => showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Close",
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      transitionDuration: const Duration(milliseconds: 350),
+      transitionBuilder: (_, a, __, child) => FadeTransition(
+        opacity: a,
+        child: ScaleTransition(
+          scale: Tween(begin: 0.96, end: 1.0).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
+          child: child,
+        ),
+      ),
+      pageBuilder: (context, _, __) => _ProjectDetail(p),
+    );
+
+class _ProjectDetail extends StatelessWidget {
+  final Project project;
+  const _ProjectDetail(this.project);
+
+  @override
+  Widget build(BuildContext context) {
+    final on = context.colors.onSurface;
+    final p = project;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(context.isMobile ? 12 : 40),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 820),
+          child: Material(
+            color: context.colors.surface,
+            borderRadius: BorderRadius.circular(28),
+            clipBehavior: Clip.antiAlias,
+            child: SingleChildScrollView(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Stack(children: [
+                  AspectRatio(aspectRatio: 16 / 9, child: _Cover(p)),
+                  Positioned(
+                    right: 12,
+                    top: 12,
+                    child: IconButton.filled(
+                      tooltip: "Close",
+                      style: IconButton.styleFrom(backgroundColor: Colors.black.withValues(alpha: 0.5)),
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close_rounded, color: Colors.white),
+                    ),
+                  ),
+                ]),
+                Padding(
+                  padding: EdgeInsets.all(context.isMobile ? 22 : 36),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    if (p.isOrg || p.isPrivate) ...[_OwnerBadge(p), const SizedBox(height: 14)],
+                    Text(p.title,
+                        style: context.text.headlineMedium!.copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 14),
+                    Text(p.summary,
+                        style: context.text.bodyLarge!.copyWith(height: 1.75, color: on.withValues(alpha: 0.75))),
+                    const SizedBox(height: 20),
+                    _MetaRow(p, hint: false),
+                    if (p.updated != null) ...[
+                      const SizedBox(height: 8),
+                      Text("Last updated ${_ago(p.updated!)}",
+                          style: context.text.bodySmall!.copyWith(color: on.withValues(alpha: 0.5))),
+                    ],
+                    const SizedBox(height: 28),
+                    Wrap(spacing: 14, runSpacing: 14, children: [
+                      if (p.storeUrl != null)
+                        FireButton(
+                          label: p.storeUrl!.contains("play.google.com") ? "Get it on Google Play" : "Open app",
+                          icon: const Icon(Icons.shop_rounded),
+                          onPressed: () => openLink(p.storeUrl!),
+                        ),
+                      if (p.sourceUrl != null)
+                        GhostButton(
+                          label: "View source",
+                          icon: Icons.code_rounded,
+                          onPressed: () => openLink(p.sourceUrl!),
+                        ),
+                      if (p.sourceUrl == null)
+                        Chip(
+                          avatar: const Icon(Icons.lock_outline_rounded, size: 16),
+                          label: const Text("Private client code"),
+                          side: BorderSide(color: on.withValues(alpha: 0.12)),
+                        ),
+                    ]),
+                  ]),
+                ),
+              ]),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -262,9 +411,8 @@ class _Skeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = context.colors.onSurface.withValues(alpha: 0.06);
     return Shimmer.fromColors(
-      baseColor: base,
+      baseColor: context.colors.onSurface.withValues(alpha: 0.06),
       highlightColor: context.colors.onSurface.withValues(alpha: 0.14),
       child: _CardGrid(
         columns: columns,
@@ -286,13 +434,13 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GlassCard(
         child: Column(children: [
-          const IconBadge(FontAwesomeIcons.github),
+          IconBadge(socials.first.icon),
           const SizedBox(height: 20),
           Text("Projects couldn't load right now.", style: context.text.titleMedium),
           const SizedBox(height: 20),
           FireButton(
             label: "Browse them on GitHub",
-            onPressed: () => openLink("https://github.com/${Profile.githubUser}"),
+            onPressed: () => openLink(socials.first.url),
           ),
         ]),
       );

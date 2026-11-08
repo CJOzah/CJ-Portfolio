@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'data/portfolio_data.dart';
-import 'github_api.dart';
+import 'github/projects_store.dart';
 import 'home_page.dart';
 import 'theme/app_theme.dart';
 
@@ -15,7 +15,7 @@ class PortfolioApp extends StatelessWidget {
   Widget build(BuildContext context) => MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => ThemeProvider()),
-          ChangeNotifierProvider(create: (_) => GithubRepos()),
+          ChangeNotifierProvider(create: (_) => ProjectsStore()..load()),
         ],
         builder: (context, _) => MaterialApp(
           title: "${Profile.name} · ${Profile.tagline}",

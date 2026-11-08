@@ -2,12 +2,22 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:canaan_portfolio/config/env_config.dart';
-import 'package:canaan_portfolio/github_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-class GithubRepos extends ChangeNotifier {
+import 'github_model.dart';
+import 'project.dart';
+
+/// Pure-Dart GitHub reader: lists repos (own, org, collaborator, invited), parses READMEs
+/// for title/overview/screenshot/Play Store link, and maps them to [Project]s.
+/// Runs in the app (public, no token) and in tool/build_projects.dart (with a token).
+class GithubFetcher {
+  GithubFetcher({this.token = ""});
+
+  /// Only ever set from the build script. Never ship a token to the browser.
+  final String token;
+
+  static void _log(Object? message) => print(message);
+
   List<GithubRepo> githubRepo = [];
   final Set<String> _invitedRepoFullNames = <String>{};
   final Map<String, String> _repoReadmeHeaderImageByFullName = <String, String>{};
@@ -17,7 +27,6 @@ class GithubRepos extends ChangeNotifier {
   final Map<String, List<_ReadmeSubProject>> _repoSubProjectsByFullName =
       <String, List<_ReadmeSubProject>>{};
   static const String _githubUsername = "CJOzah";
-  static const String _githubApiHost = "api.github.com";
 
   /// Fetches repositories from GitHub.
   ///
@@ -26,19 +35,14 @@ class GithubRepos extends ChangeNotifier {
   /// Without a token, it fetches public repos for the configured username and
   /// any public organization repos for orgs that username belongs to.
   Future<void> getGithubRepos() async {
-    final String githubToken = EnvConfig.githubToken;
-    final bool useProxyAuth = EnvConfig.githubProxyUrl.trim().isNotEmpty;
-    final bool useAuthenticatedRequest = useProxyAuth || githubToken.trim().isNotEmpty;
+    final bool useAuthenticatedRequest = token.trim().isNotEmpty;
 
     final Map<String, String> headers = {
-      "Connection": "keep-alive",
-      "Content-Type": "application/json",
-      "Accept-Encoding": "gzip, deflate, br",
       "Accept": "application/vnd.github+json",
     };
 
-    if (useAuthenticatedRequest && !useProxyAuth) {
-      headers["Authorization"] = "Bearer $githubToken";
+    if (useAuthenticatedRequest) {
+      headers["Authorization"] = "Bearer $token";
     }
 
     try {
@@ -53,8 +57,7 @@ class GithubRepos extends ChangeNotifier {
           );
           _expandEventpadiRepoIntoSubProjects();
           _filterReposWithoutReadmeImage();
-          notifyListeners();
-          debugPrint("Loaded ${githubRepo.length} repos (authenticated).");
+          _log("Loaded ${githubRepo.length} repos (authenticated).");
           return;
         }
       }
@@ -68,8 +71,7 @@ class GithubRepos extends ChangeNotifier {
       );
       _expandEventpadiRepoIntoSubProjects();
       _filterReposWithoutReadmeImage();
-      notifyListeners();
-      debugPrint("Loaded ${githubRepo.length} repos (public fallback).");
+      _log("Loaded ${githubRepo.length} repos (public fallback).");
     } on TimeoutException {
       _invitedRepoFullNames.clear();
       _repoReadmeHeaderImageByFullName.clear();
@@ -78,14 +80,10 @@ class GithubRepos extends ChangeNotifier {
       _repoPlayStoreUrlByFullName.clear();
       _repoSubProjectsByFullName.clear();
       githubRepo = [];
-      notifyListeners();
     }
   }
 
   Map<String, String> get publicHeadersForReadmeFetch => <String, String>{
-        "Connection": "keep-alive",
-        "Content-Type": "application/json",
-        "Accept-Encoding": "gzip, deflate, br",
         "Accept": "application/vnd.github+json",
       };
 
@@ -100,12 +98,12 @@ class GithubRepos extends ChangeNotifier {
         await _getWithTimeout(authProbeUrl, headers);
 
     if (userReposResponse.statusCode == 401 || userReposResponse.statusCode == 403) {
-      debugPrint("Authentication failed. Falling back to public repos.");
+      _log("Authentication failed. Falling back to public repos.");
       return null;
     }
     if (userReposResponse.statusCode != 200) {
-      debugPrint(userReposResponse.body);
-      debugPrint("Error Code: ${userReposResponse.statusCode}");
+      _log(userReposResponse.body);
+      _log("Error Code: ${userReposResponse.statusCode}");
       return <GithubRepo>[];
     }
 
@@ -130,7 +128,7 @@ class GithubRepos extends ChangeNotifier {
 
     final List<GithubRepo> mergedRepos = _mergeAndDeduplicateRepos(
         <GithubRepo>[...userRepos, ...allAccessibleUserRepos, ...invitedRepos, ...orgRepos]);
-    debugPrint(
+    _log(
         "GitHub source counts -> affiliation:${userRepos.length}; typeAll:${allAccessibleUserRepos.length}; invited:${invitedRepos.length}; org:${orgRepos.length}; merged:${mergedRepos.length}; orgs:${orgLogins.length}");
     return mergedRepos;
   }
@@ -152,7 +150,7 @@ class GithubRepos extends ChangeNotifier {
 
     final List<GithubRepo> mergedRepos =
         _mergeAndDeduplicateRepos(<GithubRepo>[...userRepos, ...orgRepos]);
-    debugPrint(
+    _log(
         "GitHub public source counts -> user:${userRepos.length}; org:${orgRepos.length}; merged:${mergedRepos.length}; orgs:${orgLogins.length}");
     return mergedRepos;
   }
@@ -303,23 +301,9 @@ class GithubRepos extends ChangeNotifier {
   /// Executes GET request with standard timeout.
   Future<http.Response> _getWithTimeout(
       Uri url, Map<String, String> headers) async {
-    final Uri resolvedUrl = _resolveGithubRequestUrl(url);
     return http
-        .get(resolvedUrl, headers: headers)
+        .get(url, headers: headers)
         .timeout(const Duration(seconds: 60));
-  }
-
-  /// Routes GitHub API requests through an optional backend proxy.
-  Uri _resolveGithubRequestUrl(Uri url) {
-    final String proxyBaseUrl = EnvConfig.githubProxyUrl;
-    if (proxyBaseUrl.trim().isEmpty || url.host.toLowerCase() != _githubApiHost) {
-      return url;
-    }
-    final Uri proxyBaseUri = Uri.parse(proxyBaseUrl);
-    final Map<String, String> mergedQueryParams =
-        Map<String, String>.from(proxyBaseUri.queryParameters);
-    mergedQueryParams["url"] = url.toString();
-    return proxyBaseUri.replace(queryParameters: mergedQueryParams);
   }
 
   /// Fetches and caches the first README image URL for each repository.
@@ -407,6 +391,8 @@ class GithubRepos extends ChangeNotifier {
             description: subProject.overview,
             pushedAt: repo.pushedAt,
             defaultBranch: repo.defaultBranch,
+            private: repo.private,
+            language: repo.language,
           ),
         );
       }
@@ -937,10 +923,6 @@ class GithubRepos extends ChangeNotifier {
     return mergedRepos;
   }
 
-  List<GithubRepo> getGithubRepo() {
-    return githubRepo;
-  }
-
   /// Returns true when this repo originated from repository invitations.
   bool isInvitedRepo(GithubRepo repo) {
     final String? fullName = repo.fullName?.trim();
@@ -996,33 +978,44 @@ class GithubRepos extends ChangeNotifier {
     return name;
   }
 
-  /// Returns Play Store URL from README Link section or search fallback.
-  String getRepoProjectUrl(GithubRepo repo) {
-    final String? fullName = repo.fullName?.trim();
-    if (fullName != null && fullName.isNotEmpty) {
-      final String? playStoreUrl = _repoPlayStoreUrlByFullName[fullName];
-      if (playStoreUrl != null && playStoreUrl.isNotEmpty) {
-        return playStoreUrl;
-      }
-    }
-    final String projectName = getRepoProjectHeading(repo).trim().isEmpty
-        ? (repo.name?.trim().isEmpty ?? true)
-            ? "app"
-            : repo.name!.trim()
-        : getRepoProjectHeading(repo).trim();
-    return "https://play.google.com/store/search?q=${Uri.encodeComponent(projectName)}&c=apps";
+
+  /// Fetches everything and returns only real apps, newest push first.
+  Future<List<Project>> fetchProjects() async {
+    await getGithubRepos();
+    return [
+      for (final GithubRepo repo in githubRepo)
+        if (_isRealApp(repo)) _toProject(repo),
+    ];
   }
 
-  void clearGithubRepo() {
-    _invitedRepoFullNames.clear();
-    _repoReadmeHeaderImageByFullName.clear();
-    _repoOverviewByFullName.clear();
-    _repoTitleByFullName.clear();
-    _repoPlayStoreUrlByFullName.clear();
-    _repoSubProjectsByFullName.clear();
-    githubRepo = [];
-    debugPrint("$githubRepo");
-    notifyListeners();
+  /// Skips forks, archived repos, the profile-README repo and this portfolio itself.
+  /// (Repos without a description or README screenshot are already dropped upstream.)
+  bool _isRealApp(GithubRepo repo) {
+    final String name = (repo.name ?? "").toLowerCase();
+    final String owner = (repo.owner?.login ?? "").toLowerCase();
+    return repo.fork != true && repo.archived != true && name != owner && name != "cj-portfolio";
+  }
+
+  Project _toProject(GithubRepo repo) {
+    final String key = repo.fullName?.trim() ?? "";
+    final String parentKey = key.split("::subproject::").first;
+    final bool isPrivate = (repo.private ?? false) || _invitedRepoFullNames.contains(parentKey);
+    final String? homepage = repo.homepage?.trim();
+    return Project(
+      id: key,
+      title: getRepoProjectHeading(repo),
+      summary: getRepoProjectDescription(repo),
+      image: _repoReadmeHeaderImageByFullName[key],
+      storeUrl: _repoPlayStoreUrlByFullName[key] ??
+          ((homepage != null && homepage.isNotEmpty) ? homepage : null),
+      sourceUrl: isPrivate ? null : repo.htmlUrl,
+      language: repo.language,
+      stars: repo.stargazersCount ?? 0,
+      updated: repo.pushedAt,
+      owner: repo.owner?.login,
+      isOrg: repo.owner?.type == "Organization",
+      isPrivate: isPrivate,
+    );
   }
 }
 

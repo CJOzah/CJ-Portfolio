@@ -25,35 +25,18 @@
       "flutterMode": "release"
     },
     {
-      "name": "Portfolio (Chrome + local proxy)",
+      "name": "Sync projects snapshot",
       "type": "dart",
       "request": "launch",
-      "program": "lib/main.dart",
-      "deviceId": "chrome",
-      "args": ["--dart-define=GITHUB_PROXY_URL=http://localhost:3000/api/github-proxy"]
-    },
-    {
-      "name": "GitHub proxy (api/)",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/api/server.js",
-      "cwd": "${workspaceFolder}/api",
-      // Put GITHUB_TOKEN=... in api/.env (gitignored). Run `npm install` in api/ once.
-      "envFile": "${workspaceFolder}/api/.env",
-      "console": "integratedTerminal"
+      "program": "tool/build_projects.dart",
+      // Export PORTFOLIO_GITHUB_TOKEN in your shell first; never commit it.
+      "env": { "PORTFOLIO_GITHUB_TOKEN": "${env:PORTFOLIO_GITHUB_TOKEN}" }
     },
     {
       "name": "Flutter tests",
       "type": "dart",
       "request": "launch",
       "program": "test/"
-    }
-  ],
-  "compounds": [
-    {
-      "name": "Portfolio + proxy",
-      "configurations": ["GitHub proxy (api/)", "Portfolio (Chrome + local proxy)"],
-      "stopAll": true
     }
   ]
 }

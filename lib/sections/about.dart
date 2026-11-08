@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../data/portfolio_data.dart';
-import '../github_api.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import '../widgets/effects.dart';
@@ -14,12 +12,6 @@ class AboutSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final desktop = context.isDesktop;
-    final repoCount = context.select<GithubRepos, int>((r) => r.githubRepo.length);
-    final stats = [
-      const Stat(5, "+", "Years of experience"),
-      if (repoCount > 0) Stat(repoCount, "", "GitHub repositories"),
-      const Stat(4, "", "Platforms shipped to"),
-    ];
 
     final photo = Reveal(
       from: const Offset(-40, 0),
@@ -115,13 +107,11 @@ class _StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: 160,
+        width: 150,
         child: GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             CountUp(
-              // Re-key so the counter replays when the live repo count arrives.
-              key: ValueKey(stat.value),
               value: stat.value,
               suffix: stat.suffix,
               style: context.text.headlineLarge!.copyWith(fontWeight: FontWeight.w700),
