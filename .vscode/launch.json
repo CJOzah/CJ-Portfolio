@@ -2,49 +2,58 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug SST",
-      "type": "node",
+      "name": "Portfolio (Chrome)",
+      "type": "dart",
       "request": "launch",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/sst",
-      "runtimeArgs": ["dev", "--increase-timeout"],
-      "console": "integratedTerminal",
-      "skipFiles": ["<node_internals>/**"],
-      // sourceMapRenames helps with the loading spinner when debugging and viewing local variables
-      "sourceMapRenames": false,
-      "env": {
-        "AWS_PROFILE": "flo-ct-flo360"
-      }
+      "program": "lib/main.dart",
+      "deviceId": "chrome"
     },
     {
-      "name": "Debug Tests - Unit",
-      "type": "node",
+      "name": "Portfolio (Chrome, profile)",
+      "type": "dart",
       "request": "launch",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/sst",
-      "runtimeArgs": ["bind", "yarn", "\"jest\"", "\"--watch\"", "\"--config\"", "\"./jest.unit.config.cjs\"", "\"${input:scopeTestsFileName}\""],
-      "console": "integratedTerminal",
-      "skipFiles": ["<node_internals>/**"],
-      "env": {
-        "AWS_PROFILE": "flo-ct-flo360"
-      },
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "flutterMode": "profile"
     },
     {
-      "name": "Debug Tests - E2E",
+      "name": "Portfolio (Chrome, release)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "flutterMode": "release"
+    },
+    {
+      "name": "Portfolio (Chrome + local proxy)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "args": ["--dart-define=GITHUB_PROXY_URL=http://localhost:3000/api/github-proxy"]
+    },
+    {
+      "name": "GitHub proxy (api/)",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/sst",
-      "runtimeArgs": ["bind", "yarn", "\"vitest\"", "\"--config\"", "\"./vitest.e2e.config.ts\"", "\"${input:scopeTestsFileName}\""],
-      "console": "integratedTerminal",
-      "skipFiles": ["<node_internals>/**"],
-      "env": {
-        "AWS_PROFILE": "flo-ct-flo360"
-      },
+      "program": "${workspaceFolder}/api/server.js",
+      "cwd": "${workspaceFolder}/api",
+      // Put GITHUB_TOKEN=... in api/.env (gitignored). Run `npm install` in api/ once.
+      "envFile": "${workspaceFolder}/api/.env",
+      "console": "integratedTerminal"
     },
+    {
+      "name": "Flutter tests",
+      "type": "dart",
+      "request": "launch",
+      "program": "test/"
+    }
   ],
-  "inputs": [
+  "compounds": [
     {
-      "id": "scopeTestsFileName",
-      "type": "promptString",
-      "description": "Partial file name to scope test debugging to. ex. arena. Leave blank to run all tests.",
+      "name": "Portfolio + proxy",
+      "configurations": ["GitHub proxy (api/)", "Portfolio (Chrome + local proxy)"],
+      "stopAll": true
     }
   ]
 }
