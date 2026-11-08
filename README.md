@@ -51,8 +51,8 @@ lib/
   main.dart                 app + theme wiring
   home_page.dart            nav, scroll-spy, progress bar, intro, footer
   data/portfolio_data.dart  all content
-  sections/                 hero, about, experience, services, projects, contact
-  widgets/                  brand_logo, effects, backdrop, command_palette (⌘K), common
+  sections/                 hero, showcase, work, projects, about, experience, services, contact
+  widgets/                  brand_logo, effects, dot_field, phone_showcase, code_window, command_palette (⌘K), common
   theme/app_theme.dart      brand palette, light/dark themes
   github/                   fetcher (pure Dart), Project model, ProjectsStore
 tool/build_projects.dart    GitHub → web/projects.json snapshot

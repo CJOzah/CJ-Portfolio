@@ -126,9 +126,9 @@ class _PaletteState extends State<_Palette> {
                               onEnter: (_) => setState(() => _index = i),
                               child: ListTile(
                                 selected: active,
-                                selectedTileColor: Brand.orange.withValues(alpha: 0.12),
+                                selectedTileColor: Brand.copper.withValues(alpha: 0.12),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                leading: Icon(item.icon, color: active ? Brand.orange : on.withValues(alpha: 0.6)),
+                                leading: Icon(item.icon, color: active ? Brand.copper : on.withValues(alpha: 0.6)),
                                 title: Text(item.title,
                                     style: TextStyle(color: on, fontWeight: FontWeight.w600)),
                                 trailing: Text(item.group,

@@ -13,23 +13,14 @@ class ContactSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desktop = context.isDesktop;
-    const info = _ContactInfo();
-    const form = _ContactForm();
     return Section(
-      child: Column(children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SectionHeader(
           eyebrow: "Contact",
-          title: "Let's build something great",
-          subtitle: "Open to full-time roles and freelance projects. Getting in touch is one click away.",
+          title: "Get in touch",
+          subtitle: "Open to full-time roles and freelance projects. Your message previews live as you type.",
         ),
-        desktop
-            ? const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Expanded(flex: 4, child: info),
-                SizedBox(width: 32),
-                Expanded(flex: 6, child: form),
-              ])
-            : const Column(children: [form, SizedBox(height: 24), info]),
+        const _ContactForm(),
       ]),
     );
   }
@@ -41,8 +32,7 @@ class _ContactInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Reveal(
-      from: const Offset(-40, 0),
-      child: GlassCard(
+      child: Panel(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           for (final c in contacts) _InfoTile(c),
           const SizedBox(height: 12),
@@ -59,36 +49,77 @@ class _ContactInfo extends StatelessWidget {
   }
 }
 
-class _InfoTile extends StatelessWidget {
+class _InfoTile extends StatefulWidget {
   final Contact contact;
   const _InfoTile(this.contact);
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 24),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: contact.url == null ? null : () => openLink(contact.url!),
-          onLongPress: () {
-            Clipboard.setData(ClipboardData(text: contact.value));
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Copied ${contact.value}")));
-          },
-          child: Row(children: [
-            IconBadge(contact.icon, size: 48),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(contact.label,
-                    style: context.text.labelMedium!
-                        .copyWith(color: context.colors.onSurface.withValues(alpha: 0.55))),
-                const SizedBox(height: 2),
-                Text(contact.value, style: context.text.titleSmall!.copyWith(fontWeight: FontWeight.w600)),
-              ]),
-            ),
-          ]),
-        ),
-      );
+  State<_InfoTile> createState() => _InfoTileState();
 }
+
+class _InfoTileState extends State<_InfoTile> {
+  bool _copied = false;
+
+  Future<void> _copy() async {
+    await Clipboard.setData(ClipboardData(text: widget.contact.value));
+    if (!mounted) return;
+    setState(() => _copied = true);
+    await Future.delayed(const Duration(milliseconds: 1600));
+    if (mounted) setState(() => _copied = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final contact = widget.contact;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Row(children: [
+        Expanded(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: contact.url == null ? null : () => openLink(contact.url!),
+            child: Row(children: [
+              IconBadge(contact.icon, size: 48),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(contact.label,
+                      style: context.text.labelMedium!
+                          .copyWith(color: context.colors.onSurface.withValues(alpha: 0.6))),
+                  const SizedBox(height: 2),
+                  Text(contact.value, style: context.text.titleSmall!.copyWith(fontWeight: FontWeight.w600)),
+                ]),
+              ),
+            ]),
+          ),
+        ),
+        if (contact.url != null)
+          IconButton(
+            tooltip: _copied ? "Copied" : "Copy",
+            onPressed: _copy,
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (child, a) => ScaleTransition(scale: a, child: child),
+              child: Icon(
+                _copied ? Icons.check_rounded : Icons.copy_rounded,
+                key: ValueKey(_copied),
+                size: 18,
+                color: _copied ? const Color(0xFF22A06B) : null,
+              ),
+            ),
+          ),
+      ]),
+    );
+  }
+}
+
+/// The exact text sent; fields left empty are omitted.
+String contactMessage(String name, String email, String phone, String message) => [
+      if (name.trim().isNotEmpty) "Hello, I am ${name.trim()}.",
+      if (email.trim().isNotEmpty) "Email: ${email.trim()}",
+      if (phone.trim().isNotEmpty) "Phone: ${phone.trim()}",
+      if (message.trim().isNotEmpty) message.trim(),
+    ].join("\n");
 
 class _ContactForm extends StatefulWidget {
   const _ContactForm();
@@ -111,10 +142,7 @@ class _ContactFormState extends State<_ContactForm> {
     super.dispose();
   }
 
-  String get _body => "Hello, I am ${_name.text.trim()}.\n"
-      "Email: ${_email.text.trim()}\n"
-      "Phone: ${_phone.text.trim()}\n"
-      "Message: ${_message.text.trim()}";
+  String get _body => contactMessage(_name.text, _email.text, _phone.text, _message.text);
 
   void _send({required bool whatsapp}) {
     if (!_formKey.currentState!.validate()) return;
@@ -143,9 +171,8 @@ class _ContactFormState extends State<_ContactForm> {
       decoration: const InputDecoration(hintText: "Phone (optional)"),
     );
 
-    return Reveal(
-      from: const Offset(40, 0),
-      child: GlassCard(
+    final form = Reveal(
+      child: Panel(
         child: Form(
           key: _formKey,
           child: AutofillGroup(
@@ -177,7 +204,7 @@ class _ContactFormState extends State<_ContactForm> {
               ),
               const SizedBox(height: 24),
               Wrap(spacing: 16, runSpacing: 16, children: [
-                FireButton(
+                PrimaryButton(
                   label: "Send via WhatsApp",
                   icon: FaIcon(contacts[1].icon),
                   onPressed: () => _send(whatsapp: true),
@@ -188,6 +215,92 @@ class _ContactFormState extends State<_ContactForm> {
                   onPressed: () => _send(whatsapp: false),
                 ),
               ]),
+            ]),
+          ),
+        ),
+      ),
+    );
+    final preview = ListenableBuilder(
+      listenable: Listenable.merge([_name, _email, _phone, _message]),
+      builder: (_, __) => _MessagePreview(_body),
+    );
+    const info = _ContactInfo();
+    if (!context.isDesktop) {
+      return Column(children: [form, const SizedBox(height: 24), Reveal(child: preview), const SizedBox(height: 24), info]);
+    }
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(flex: 6, child: form),
+      const SizedBox(width: 32),
+      Expanded(flex: 5, child: Column(children: [Reveal(child: preview), const SizedBox(height: 24), info])),
+    ]);
+  }
+}
+
+/// WhatsApp-style preview showing exactly what will be sent.
+class _MessagePreview extends StatelessWidget {
+  final String body;
+  const _MessagePreview(this.body);
+
+  static const _chat = Color(0xFF0B141A), _bar = Color(0xFF1F2C34), _outgoing = Color(0xFF005C4B);
+
+  @override
+  Widget build(BuildContext context) {
+    final empty = body.isEmpty;
+    return Semantics(
+      label: empty ? "Message preview, empty" : "Message preview: $body",
+      child: ExcludeSemantics(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: ColoredBox(
+            color: _chat,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Container(
+                color: _bar,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                child: Row(children: [
+                  ClipOval(child: Image.asset("images/portrait.jpg", width: 36, height: 36, fit: BoxFit.cover)),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(Profile.name, style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                      Text("Preview of your message", style: TextStyle(color: Color(0x99FFFFFF), fontSize: 11.5)),
+                    ]),
+                  ),
+                ]),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 18, 14, 18),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 96),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: AnimatedSize(
+                      duration: const Duration(milliseconds: 180),
+                      alignment: Alignment.topRight,
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 340),
+                        padding: const EdgeInsets.fromLTRB(12, 9, 12, 8),
+                        decoration: const BoxDecoration(
+                          color: _outgoing,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            bottomLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12),
+                          ),
+                        ),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisSize: MainAxisSize.min, children: [
+                          Text(
+                            empty ? "Start typing and your message appears here" : body,
+                            style: TextStyle(color: empty ? const Color(0x99FFFFFF) : Colors.white, fontSize: 14, height: 1.4),
+                          ),
+                          const SizedBox(height: 4),
+                          const Icon(Icons.done_all_rounded, size: 15, color: Color(0xFF53BDEB)),
+                        ]),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ]),
           ),
         ),

@@ -19,7 +19,6 @@ class _ExperienceSectionState extends State<ExperienceSection> {
 
   @override
   Widget build(BuildContext context) {
-    final desktop = context.isDesktop;
     final detail = AnimatedSwitcher(
       duration: const Duration(milliseconds: 400),
       switchInCurve: Curves.easeOutCubic,
@@ -34,80 +33,117 @@ class _ExperienceSectionState extends State<ExperienceSection> {
     );
 
     return Section(
-      child: Column(children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SectionHeader(
           eyebrow: "Where I've worked",
           title: "Experience",
           subtitle: "Event platforms, delivery logistics, healthcare and more: shipped and in production.",
         ),
         Reveal(
-          child: desktop
-              ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  SizedBox(width: 320, child: _RoleList(selected: _selected, onSelect: _select)),
-                  const SizedBox(width: 32),
-                  Expanded(child: detail),
-                ])
-              : Column(children: [
-                  _RoleChips(selected: _selected, onSelect: _select),
-                  const SizedBox(height: 20),
-                  detail,
-                ]),
+          child: Column(children: [
+            context.isMobile
+                ? _RoleChips(selected: _selected, onSelect: _select)
+                : _CareerTimeline(selected: _selected, onSelect: _select),
+            const SizedBox(height: 28),
+            detail,
+          ]),
         ),
       ]),
     );
   }
 }
 
-class _RoleList extends StatelessWidget {
+/// Gantt-style history: bars show when each role ran, including overlaps.
+class _CareerTimeline extends StatelessWidget {
+  static const _startYear = 2021.0, _rowHeight = 38.0, _labelRoom = 230.0;
   final int selected;
   final ValueChanged<int> onSelect;
-  const _RoleList({required this.selected, required this.onSelect});
+  const _CareerTimeline({required this.selected, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
     final on = context.colors.onSurface;
-    return Column(children: [
-      for (var i = 0; i < experience.length; i++)
-        Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: () => onSelect(i),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: i == selected ? Brand.orange.withValues(alpha: 0.1) : Colors.transparent,
-              ),
-              child: Row(children: [
+    final today = DateTime.now();
+    final now = today.year + (today.month - 1) / 12;
+    final endYear = now + 0.25;
+    return LayoutBuilder(builder: (context, c) {
+      final w = c.maxWidth;
+      double x(double year) => (year - _startYear) / (endYear - _startYear) * w;
+      return VisibleBuilder(
+        builder: (context, seen) => TweenAnimationBuilder<double>(
+          tween: Tween(end: seen ? 1 : 0),
+          duration: Duration(milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 1300),
+          curve: Curves.easeOutQuint,
+          builder: (context, grow, _) => SizedBox(
+            height: 34 + experience.length * _rowHeight,
+            child: Stack(children: [
+              for (var y = 2021; y <= now; y++) ...[
+                Positioned(left: x(y.toDouble()), top: 26, bottom: 0, child: Container(width: 1, color: Theme.of(context).dividerColor)),
+                Positioned(
+                  left: x(y.toDouble()),
+                  top: 0,
+                  child: Text("$y", style: context.text.labelMedium!.copyWith(color: on.withValues(alpha: 0.55))),
+                ),
+              ],
+              Positioned(left: x(now), top: 26, bottom: 0, child: Container(width: 1.5, color: Brand.copper)),
+              for (var i = 0; i < experience.length; i++) _bar(context, i, x, now, grow, w),
+            ]),
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _bar(BuildContext context, int i, double Function(double) x, double now, double grow, double w) {
+    final on = context.colors.onSurface;
+    final r = experience[i];
+    final active = i == selected;
+    final left = x(r.from);
+    final barWidth = (x(r.to ?? now) - left) * grow;
+    final labelInside = left + x(r.to ?? now) - x(r.from) + _labelRoom > w;
+    final label = Text(
+      r.company,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: context.text.labelLarge!.copyWith(
+        fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+        color: labelInside && active ? Brand.ink : (active ? on : on.withValues(alpha: 0.75)),
+      ),
+    );
+    return Positioned(
+      left: left,
+      top: 34 + i * _rowHeight,
+      height: _rowHeight - 8,
+      right: 0,
+      child: Semantics(
+        button: true,
+        selected: active,
+        label: "${r.company}, ${r.period}",
+        child: ExcludeSemantics(
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: () => onSelect(i),
+              borderRadius: BorderRadius.circular(6),
+              child: Stack(alignment: Alignment.centerLeft, children: [
                 AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  width: 3,
-                  height: i == selected ? 34 : 14,
+                  duration: const Duration(milliseconds: 220),
+                  width: barWidth.clamp(6.0, double.infinity),
                   decoration: BoxDecoration(
-                    gradient: i == selected ? Brand.fire : null,
-                    color: i == selected ? null : on.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(2),
+                    color: active ? Brand.copper : on.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(experience[i].company,
-                        style: context.text.titleSmall!.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: i == selected ? on : on.withValues(alpha: 0.6),
-                        )),
-                    Text(experience[i].period,
-                        style: context.text.labelSmall!.copyWith(color: on.withValues(alpha: 0.45))),
-                  ]),
+                Padding(
+                  padding: EdgeInsets.only(left: labelInside ? 12 : (barWidth + 10).clamp(16.0, double.infinity)),
+                  child: label,
                 ),
               ]),
             ),
           ),
         ),
-    ]);
+      ),
+    );
   }
 }
 
@@ -128,10 +164,10 @@ class _RoleChips extends StatelessWidget {
             selected: i == selected,
             showCheckmark: false,
             onSelected: (_) => onSelect(i),
-            selectedColor: Brand.orange,
+            selectedColor: context.colors.onSurface,
             labelStyle: TextStyle(
               fontWeight: FontWeight.w600,
-              color: i == selected ? Colors.white : context.colors.onSurface,
+              color: i == selected ? context.colors.surface : context.colors.onSurface,
             ),
             shape: const StadiumBorder(),
             side: BorderSide(color: context.colors.onSurface.withValues(alpha: 0.12)),
@@ -147,16 +183,16 @@ class _RoleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final on = context.colors.onSurface;
-    return GlassCard(
+    return Panel(
       padding: const EdgeInsets.all(32),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text.rich(
           TextSpan(children: [
             TextSpan(text: role.title),
             TextSpan(text: "  @ ", style: TextStyle(color: on.withValues(alpha: 0.4))),
-            TextSpan(text: role.company, style: const TextStyle(color: Brand.orange)),
+            TextSpan(text: role.company, style: TextStyle(color: context.accentText)),
           ]),
-          style: context.text.headlineSmall!.copyWith(fontWeight: FontWeight.w700),
+          style: context.text.headlineSmall!.copyWith(fontWeight: FontWeight.w600, fontSize: 22),
         ),
         const SizedBox(height: 8),
         Wrap(spacing: 16, runSpacing: 4, children: [
@@ -169,13 +205,13 @@ class _RoleCard extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 14),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               const Padding(
-                padding: EdgeInsets.only(top: 4),
-                child: Icon(Icons.arrow_right_rounded, color: Brand.orange, size: 20),
+                padding: EdgeInsets.only(top: 10, left: 4, right: 4),
+                child: Icon(Icons.circle, color: Brand.copper, size: 6),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(h,
-                    style: context.text.bodyLarge!.copyWith(height: 1.6, color: on.withValues(alpha: 0.75))),
+                    style: context.text.bodyLarge!.copyWith(fontSize: 15, height: 1.6, color: on.withValues(alpha: 0.75))),
               ),
             ]),
           ),

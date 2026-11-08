@@ -6,7 +6,8 @@
       "type": "dart",
       "request": "launch",
       "program": "lib/main.dart",
-      "deviceId": "chrome"
+      "deviceId": "chrome",
+      "args": ["--no-web-resources-cdn"]
     },
     {
       "name": "Portfolio (Chrome, profile)",
@@ -14,6 +15,7 @@
       "request": "launch",
       "program": "lib/main.dart",
       "deviceId": "chrome",
+      "args": ["--no-web-resources-cdn"],
       "flutterMode": "profile"
     },
     {
@@ -22,6 +24,7 @@
       "request": "launch",
       "program": "lib/main.dart",
       "deviceId": "chrome",
+      "args": ["--no-web-resources-cdn"],
       "flutterMode": "release"
     },
     {

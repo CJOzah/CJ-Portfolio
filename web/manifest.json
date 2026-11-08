@@ -1,10 +1,10 @@
 {
     "name": "Canaan Ozah \u00b7 Portfolio",
-    "short_name": "CJ Ozah",
+    "short_name": "Canaan Ozah",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#051A2A",
-    "theme_color": "#051A2A",
+    "background_color": "#FFFFFF",
+    "theme_color": "#12263F",
     "description": "Canaan Ozah (CJ) \u2014 Senior Flutter developer portfolio.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,

@@ -45,16 +45,14 @@ class _ProjectsSectionState extends State<ProjectsSection> {
       _ => all.where((p) => p.language == _filter).toList(),
     };
     final visible = _showAll ? filtered : filtered.take(_pageSize).toList();
-    final columns = context.isDesktop ? 3 : (context.isMobile ? 1 : 2);
+    final columns = context.isMobile ? 1 : (context.isDesktop ? 3 : 2);
 
     return Section(
-      child: Column(children: [
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SectionHeader(
-          eyebrow: "What I've built",
+          eyebrow: "GitHub",
           title: "Recent apps",
-          subtitle: store.syncedAt == null
-              ? "Pulled live from GitHub: my apps and work for the teams I've joined."
-              : "Synced from GitHub ${_ago(store.syncedAt!)}: my apps and work for the teams I've joined.",
+          subtitle: "Applications from my GitHub and the organizations I work with.",
         ),
         if (store.loading)
           _Skeleton(columns: columns)
@@ -65,14 +63,13 @@ class _ProjectsSectionState extends State<ProjectsSection> {
             child: Wrap(
               spacing: 10,
               runSpacing: 10,
-              alignment: WrapAlignment.center,
               children: [
                 for (final f in filters)
                   ChoiceChip(
                     label: Text(f == "All" ? "All (${all.length})" : f),
                     avatar: f == _clientFilter
                         ? Icon(Icons.apartment_rounded,
-                            size: 16, color: _filter == f ? Colors.white : Brand.orange)
+                            size: 16, color: _filter == f ? context.colors.surface : context.colors.onSurface)
                         : null,
                     selected: _filter == f,
                     showCheckmark: false,
@@ -80,10 +77,10 @@ class _ProjectsSectionState extends State<ProjectsSection> {
                       _filter = f;
                       _showAll = false;
                     }),
-                    selectedColor: Brand.orange,
+                    selectedColor: context.colors.onSurface,
                     labelStyle: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: _filter == f ? Colors.white : context.colors.onSurface,
+                      color: _filter == f ? context.colors.surface : context.colors.onSurface,
                     ),
                     shape: const StadiumBorder(),
                     side: BorderSide(color: context.colors.onSurface.withValues(alpha: 0.12)),
@@ -94,7 +91,7 @@ class _ProjectsSectionState extends State<ProjectsSection> {
           const SizedBox(height: 40),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
-            child: _CardGrid(
+            child: CardGrid(
               key: ValueKey("$_filter$_showAll"),
               columns: columns,
               children: [
@@ -107,7 +104,7 @@ class _ProjectsSectionState extends State<ProjectsSection> {
             ),
           ),
           const SizedBox(height: 40),
-          Wrap(spacing: 16, runSpacing: 16, alignment: WrapAlignment.center, children: [
+          Wrap(spacing: 16, runSpacing: 16, children: [
             if (filtered.length > _pageSize)
               GhostButton(
                 label: _showAll ? "Show less" : "Show all ${filtered.length}",
@@ -129,23 +126,6 @@ String _ago(DateTime t) {
   if (d.inHours < 24) return "${d.inHours}h ago";
   if (d.inDays < 30) return "${d.inDays}d ago";
   return "on ${t.year}-${t.month.toString().padLeft(2, "0")}-${t.day.toString().padLeft(2, "0")}";
-}
-
-class _CardGrid extends StatelessWidget {
-  final int columns;
-  final List<Widget> children;
-  const _CardGrid({super.key, required this.columns, required this.children});
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: (context, c) {
-        const gap = 24.0;
-        final w = (c.maxWidth - gap * (columns - 1)) / columns;
-        return Wrap(
-          spacing: gap,
-          runSpacing: gap,
-          children: [for (final child in children) SizedBox(width: w, child: child)],
-        );
-      });
 }
 
 class _Cover extends StatelessWidget {
@@ -183,9 +163,9 @@ class _ProjectCard extends StatelessWidget {
         child: Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: context.isDark ? Colors.white.withValues(alpha: 0.035) : Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: on.withValues(alpha: 0.08)),
+            color: context.colors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             AspectRatio(
@@ -237,7 +217,7 @@ class _OwnerBadge extends StatelessWidget {
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(project.isOrg ? Icons.apartment_rounded : Icons.lock_outline_rounded,
-              size: 13, color: Brand.amber),
+              size: 13, color: Colors.white),
           const SizedBox(width: 6),
           Text(project.isOrg ? (project.owner ?? "Client work") : "Client work",
               style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
@@ -258,7 +238,7 @@ class _MetaRow extends StatelessWidget {
         Container(
           width: 10,
           height: 10,
-          decoration: const BoxDecoration(shape: BoxShape.circle, gradient: Brand.fire),
+          decoration: const BoxDecoration(shape: BoxShape.circle, color: Brand.copper),
         ),
         const SizedBox(width: 6),
         Text(project.language!, style: context.text.labelMedium),
@@ -271,9 +251,9 @@ class _MetaRow extends StatelessWidget {
       ],
       if (hint) ...[
         const Spacer(),
-        Text("Details", style: context.text.labelMedium!.copyWith(color: Brand.orange)),
+        Text("Details", style: context.text.labelMedium!.copyWith(color: context.accentText)),
         const SizedBox(width: 4),
-        const Icon(Icons.north_east_rounded, size: 16, color: Brand.orange),
+        Icon(Icons.north_east_rounded, size: 16, color: context.accentText),
       ],
     ]);
   }
@@ -311,7 +291,7 @@ class _ProjectDetail extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 820),
           child: Material(
             color: context.colors.surface,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(12),
             clipBehavior: Clip.antiAlias,
             child: SingleChildScrollView(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -347,7 +327,7 @@ class _ProjectDetail extends StatelessWidget {
                     const SizedBox(height: 28),
                     Wrap(spacing: 14, runSpacing: 14, children: [
                       if (p.storeUrl != null)
-                        FireButton(
+                        PrimaryButton(
                           label: p.storeUrl!.contains("play.google.com") ? "Get it on Google Play" : "Open app",
                           icon: const Icon(Icons.shop_rounded),
                           onPressed: () => openLink(p.storeUrl!),
@@ -392,7 +372,7 @@ class _Placeholder extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Brand.navy, Brand.orange.withValues(alpha: 0.6)],
+          colors: [Brand.navy, Color(0xFF28486B)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -414,13 +394,13 @@ class _Skeleton extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: context.colors.onSurface.withValues(alpha: 0.06),
       highlightColor: context.colors.onSurface.withValues(alpha: 0.14),
-      child: _CardGrid(
+      child: CardGrid(
         columns: columns,
         children: List.generate(
           columns * 2,
           (_) => Container(
             height: 360,
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
           ),
         ),
       ),
@@ -432,13 +412,13 @@ class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
-  Widget build(BuildContext context) => GlassCard(
+  Widget build(BuildContext context) => Panel(
         child: Column(children: [
           IconBadge(socials.first.icon),
           const SizedBox(height: 20),
           Text("Projects couldn't load right now.", style: context.text.titleMedium),
           const SizedBox(height: 20),
-          FireButton(
+          PrimaryButton(
             label: "Browse them on GitHub",
             onPressed: () => openLink(socials.first.url),
           ),
