@@ -28,14 +28,6 @@
       "flutterMode": "release"
     },
     {
-      "name": "Sync projects snapshot",
-      "type": "dart",
-      "request": "launch",
-      "program": "tool/build_projects.dart",
-      // Export PORTFOLIO_GITHUB_TOKEN in your shell first; never commit it.
-      "env": { "PORTFOLIO_GITHUB_TOKEN": "${env:PORTFOLIO_GITHUB_TOKEN}" }
-    },
-    {
       "name": "Flutter tests",
       "type": "dart",
       "request": "launch",

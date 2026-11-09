@@ -179,6 +179,12 @@ const experience = [
 /// An app shown in the first-page showcase. Assets live in images/apps/.
 class AppPreview {
   final String slug, name, category, blurb;
+
+  /// Group shown as a filter in the Recent apps section.
+  final String family;
+
+  /// Background colour of the mock-up cover, as 0xAARRGGBB.
+  final int tint;
   final List<String> tags;
 
   /// Google Play package id; null while the app is unreleased.
@@ -187,7 +193,7 @@ class AppPreview {
   /// How many store screenshots exist as images/apps/<slug>-<n>.jpg.
   final int shots;
   const AppPreview(this.slug, this.name, this.category, this.blurb,
-      {this.tags = const [], this.playId, this.shots = 0});
+      {required this.family, required this.tint, this.tags = const [], this.playId, required this.shots});
 
   String get icon => "images/apps/$slug.png";
   String shot(int i) => "images/apps/$slug-$i.jpg";
@@ -197,49 +203,58 @@ class AppPreview {
 const apps = [
   AppPreview("eventpadi", "EventPadi", "Event companion",
       "Attendee app for agendas, speakers, networking, live polls, a shop and QR badges, with on-site check-in for staff.",
-      tags: ["Flutter", "WebSockets", "QR"], playId: "com.membscribe.eventspadi", shots: 3),
-  AppPreview("trimmers", "Trimmers", "Salon and membership",
-      "Book salon services, shop the Mini Mart, buy memberships and top up a wallet, with card payments through Paystack.",
-      tags: ["Flutter", "Payments", "Firebase"], playId: "com.dreacotdigital.trimmers", shots: 3),
-  AppPreview("garm", "Garm Island", "Fashion e-commerce",
-      "Menswear store with product discovery, cart, secure checkout, wallet payments and delivery tracking.",
-      tags: ["Flutter", "Payments", "Firebase"], playId: "com.dreacotdigital.garmisland", shots: 2),
-  AppPreview("autofixr", "Autofixr", "Auto services",
-      "Find vetted mechanics and workshops near you for repairs, quick servicing and routine car maintenance.",
-      tags: ["Flutter", "Google Maps", "FCM"], playId: "com.autofixrapp.app", shots: 3),
-  AppPreview("omniverse", "Omniverse Summit", "Live events",
-      "The official summit app, with QR entry, real-time Q&A and polling for attendees in person or online.",
-      tags: ["Swift", "MVVM", "WebSockets"], playId: "com.membscribe.omniverse", shots: 3),
+      family: "EventPadi apps", tint: 0xFF7A18E8, tags: ["Flutter", "WebSockets", "QR"], playId: "com.membscribe.eventspadi", shots: 3),
   AppPreview("studio", "EventPadi Studio", "Event organizer tools",
       "Create events, sell tickets and check in guests, all from your phone.",
-      tags: ["Flutter", "Bloc"], playId: "com.eventpadi.studio", shots: 3),
-  AppPreview("opms", "Periscope", "Construction projects",
-      "OysterBuild's project app, bringing dashboards, project updates and payments together for clients.",
-      tags: ["Flutter", "Firebase"], playId: "com.membscribe.opms", shots: 3),
+      family: "EventPadi apps", tint: 0xFF5B21B6, tags: ["Flutter", "Bloc"], playId: "com.eventpadi.studio", shots: 3),
+  AppPreview("omniverse", "Omniverse Summit", "Live events",
+      "The official summit app, with QR entry, real-time Q&A and polling for attendees in person or online.",
+      family: "EventPadi apps", tint: 0xFF2A2F8F, tags: ["Swift", "MVVM", "WebSockets"], playId: "com.membscribe.omniverse", shots: 3),
   AppPreview("ofala", "The Ofala Onitsha App", "Culture festival",
       "The official digital companion to the Ofala Festival, with ticketing and a real-time schedule.",
-      tags: ["Dart", "WebSockets"], playId: "com.eventpadi.ofala", shots: 3),
+      family: "EventPadi apps", tint: 0xFFC9A227, tags: ["Dart", "WebSockets"], playId: "com.eventpadi.ofala", shots: 3),
   AppPreview("nafest", "NAFEST", "National festival",
       "The official app of Nigeria's National Festival of Arts and Culture.",
-      tags: ["Flutter", "White-label"], playId: "com.eventpadi.nafests", shots: 3),
+      family: "EventPadi apps", tint: 0xFF2E7D32, tags: ["Flutter", "White-label"], playId: "com.eventpadi.nafests", shots: 3),
   AppPreview("asis", "Africa Social Impact Summit", "Impact events",
       "Summit app for the Sterling One Foundation's work on sustainable social impact across Africa.",
-      tags: ["Flutter", "QR"], playId: "com.eventpadi.asis", shots: 3),
-  AppPreview("tec", "TEC Community", "Church community",
-      "Community app with forms and surveys, built on the shared white-label shell behind several of these apps.",
-      tags: ["Flutter", "White-label"], playId: "com.membscribes.tec", shots: 3),
+      family: "EventPadi apps", tint: 0xFFB4532A, tags: ["Flutter", "QR"], playId: "com.eventpadi.asis", shots: 3),
+  AppPreview("dreacot_user", "Dreacot", "On-demand delivery",
+      "Order food, groceries and deliveries from stores nearby, pay by wallet and follow your rider live.",
+      family: "Dreacot apps", tint: 0xFFE8890C, tags: ["Flutter", "Maps", "Payments"], playId: "com.dreacotdigital.dreacotdelivery.user", shots: 3),
+  AppPreview("dreacot_rider", "Dreacot: Rider", "Delivery riders",
+      "Riders get orders assigned automatically and follow optimized routes with live GPS.",
+      family: "Dreacot apps", tint: 0xFFC96F00, tags: ["Flutter", "Maps", "FCM"], playId: "com.dreacotdigital.dreacotdelivery.rider", shots: 3),
+  AppPreview("dreacot_partner", "Dreacot: Partner", "Vendors",
+      "Vendors receive and manage delivery orders from customers in real time.",
+      family: "Dreacot apps", tint: 0xFFA85A00, tags: ["Flutter", "FCM"], playId: "com.dreacotdigital.dreacotdelivery.partner", shots: 3),
+  AppPreview("trimmers", "Trimmers", "Salon and membership",
+      "Book salon services, shop the Mini Mart, buy memberships and top up a wallet, with card payments through Paystack.",
+      family: "Trimmers apps", tint: 0xFFB08D57, tags: ["Flutter", "Payments", "Firebase"], playId: "com.dreacotdigital.trimmers", shots: 3),
   AppPreview("trimmers_staff", "Trimmers: Staff", "Salon operations",
       "The companion app for salon specialists working alongside Trimmers.",
-      tags: ["Flutter", "Firebase"], playId: "com.dreacotdigital.trimmers.staff", shots: 3),
-  AppPreview("estatepadi", "EstatePadi", "Property management",
-      "A private resident portal for estate management.",
-      tags: ["Flutter"]),
+      family: "Trimmers apps", tint: 0xFF3A2F25, tags: ["Flutter", "Firebase"], playId: "com.dreacotdigital.trimmers.staff", shots: 3),
+  AppPreview("autofixr", "Autofixr", "Auto services",
+      "Find vetted mechanics and workshops near you for repairs, quick servicing and routine car maintenance.",
+      family: "Other apps", tint: 0xFF0F6E66, tags: ["Flutter", "Google Maps", "FCM"], playId: "com.autofixrapp.app", shots: 3),
+  AppPreview("tec", "TEC Community", "Church community",
+      "Community app with forms and surveys, built on the shared white-label shell behind several of these apps.",
+      family: "Other apps", tint: 0xFF1F5FA8, tags: ["Flutter", "White-label"], playId: "com.membscribes.tec", shots: 3),
+  AppPreview("garm", "Garm Island", "Fashion e-commerce",
+      "Menswear store with product discovery, cart, secure checkout, wallet payments and delivery tracking.",
+      family: "Other apps", tint: 0xFF1A1A1A, tags: ["Flutter", "Payments", "Firebase"], playId: "com.dreacotdigital.garmisland", shots: 2),
+  AppPreview("opms", "Periscope", "Construction projects",
+      "OysterBuild's project app, bringing dashboards, project updates and payments together for clients.",
+      family: "Other apps", tint: 0xFF4F9EC4, tags: ["Flutter", "Firebase"], playId: "com.membscribe.opms", shots: 3),
   AppPreview("trackpadi", "Trackpadi", "Personal finance",
       "A shared household income and expense tracker for partners, synced in real time.",
-      tags: ["Flutter", "Bloc", "Supabase"]),
+      family: "Other apps", tint: 0xFF1E6B4E, tags: ["Flutter", "Bloc", "Supabase"], playId: "com.eventpadi.trackpadi", shots: 3),
+  AppPreview("estatepadi", "EstatePadi", "Property management",
+      "A private resident portal for estate management: bills, announcements and your leaders in one place.",
+      family: "Other apps", tint: 0xFF1F5C46, tags: ["Flutter"], shots: 2),
   AppPreview("applypadi", "ApplyPadi", "Job search",
-      "A job application assistant with AI help, job board search, PDF résumés and reminders.",
-      tags: ["Flutter", "Firebase AI"]),
+      "A job-hunting assistant: upload your resume, find jobs that fit and approve each prepared application.",
+      family: "Other apps", tint: 0xFF2A7F8E, tags: ["Flutter", "Firebase AI"], shots: 1),
 ];
 
 List<Role> rolesUsing(String tech) => experience.where((r) => r.tags.contains(tech)).toList();

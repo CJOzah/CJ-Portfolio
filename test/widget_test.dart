@@ -1,7 +1,7 @@
 import 'package:canaan_portfolio/data/portfolio_data.dart';
-import 'package:canaan_portfolio/github/project.dart';
 import 'package:canaan_portfolio/sections/contact.dart';
 import 'package:canaan_portfolio/sections/hero.dart';
+import 'package:canaan_portfolio/sections/projects.dart';
 import 'package:canaan_portfolio/sections/showcase.dart';
 import 'package:canaan_portfolio/sections/work.dart';
 import 'package:canaan_portfolio/widgets/brand_logo.dart';
@@ -18,17 +18,6 @@ void main() {
   testWidgets('BrandLogo paints without errors', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: Center(child: BrandLogo(size: 120))));
     expect(find.bySemanticsLabel("CJ logo"), findsOneWidget);
-  });
-
-  test('Project survives the snapshot JSON round-trip', () {
-    final p = Project(
-      id: "org/app", title: "App", summary: "S", image: "projects/app-0.png",
-      storeUrl: "https://play.google.com/x", language: "Dart", stars: 3,
-      updated: DateTime.utc(2026, 1, 2), owner: "org", isOrg: true, isPrivate: true,
-    );
-    final back = Project.fromJson(p.toJson());
-    expect(back.toJson(), p.toJson());
-    expect(back.sourceUrl, isNull);
   });
 
   testWidgets('Command palette filters and runs with the keyboard', (tester) async {
@@ -126,7 +115,7 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: SingleChildScrollView(child: ShowcaseSection()))));
     await tester.pump(const Duration(seconds: 1));
     expect(find.text(apps.first.blurb), findsOneWidget);
-    await tester.tap(find.byTooltip("Trackpadi"));
+    await tester.tap(find.byTooltip("ApplyPadi"));
     await tester.pump(const Duration(seconds: 1));
     expect(find.text("In development"), findsOneWidget);
     await tester.pumpWidget(const SizedBox()); // stops the auto-advance timer
@@ -147,5 +136,38 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text("done"), findsOneWidget);
     expect(tester.widget<Opacity>(find.ancestor(of: find.text("done"), matching: find.byType(Opacity))).opacity, 1);
+  });
+
+  testWidgets('Recent apps lists every app and filters by family', (tester) async {
+    tester.view.physicalSize = const Size(1440, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: SingleChildScrollView(child: ProjectsSection()))));
+    for (var i = 0; i < 12; i++) {
+      await tester.pump(const Duration(milliseconds: 200)); // lets the entrance animations finish
+    }
+    for (final a in apps) {
+      expect(find.text(a.name), findsOneWidget, reason: a.name);
+    }
+    await tester.tap(find.text("Trimmers apps"));
+    for (var i = 0; i < 12; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    expect(find.text("Trimmers"), findsOneWidget);
+    expect(find.text("Autofixr"), findsNothing);
+  });
+
+  test('wrapCentered keeps endless scrolling inside its span', () {
+    expect(wrapCentered(0, 10), 0);
+    expect(wrapCentered(6, 10), -4);
+    expect(wrapCentered(-6, 10), 4);
+    expect(wrapCentered(101, 10), 1);
+  });
+
+  test('isOnCard keeps visible screens and drops far ones', () {
+    const card = Size(400, 300);
+    expect(isOnCard(Offset.zero, card, margin: 0), isTrue);
+    expect(isOnCard(const Offset(0, 2000), card, margin: 100), isFalse);
+    expect(isOnCard(const Offset(2000, 0), card, margin: 100), isFalse);
   });
 }

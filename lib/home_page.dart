@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'data/portfolio_data.dart';
-import 'github/projects_store.dart';
 import 'sections/about.dart';
 import 'sections/contact.dart';
 import 'sections/experience.dart';
@@ -106,11 +105,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     showCommandPalette(context, [
       for (var i = 0; i < _labels.length; i++)
         PaletteItem("Go to ${_labels[i]}", "Section", _icons[i], () => _goTo(i)),
-      for (final p in context.read<ProjectsStore>().projects)
-        PaletteItem(p.title, p.isOrg ? "App · ${p.owner}" : "App", Icons.apps_rounded,
-            () => showProjectDetail(context, p)),
       for (final a in apps)
-        PaletteItem(a.name, a.category, Icons.smartphone_rounded, () => a.storeUrl == null ? _goTo(1) : openLink(a.storeUrl!)),
+        PaletteItem(a.name, a.category, Icons.smartphone_rounded, () => showAppDetail(context, a)),
       for (final r in experience)
         PaletteItem("${r.title} @ ${r.company}", "Experience", Icons.work_outline_rounded, () => _goTo(3)),
       PaletteItem(

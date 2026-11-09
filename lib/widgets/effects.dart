@@ -98,7 +98,8 @@ class _RevealState extends State<Reveal> with SingleTickerProviderStateMixin, _F
           opacity: curve.value,
           child: ImageFiltered(
             // Same widget tree when finished, so children keep their state.
-            enabled: rest > 0.01,
+            // Never on phones or on flipping cards: blurring live content every frame stutters.
+            enabled: rest > 0.01 && !context.isMobile && !widget.flip,
             imageFilter: ImageFilter.blur(sigmaX: 7 * rest, sigmaY: 7 * rest),
             child: Transform(
               alignment: Alignment.bottomCenter,
