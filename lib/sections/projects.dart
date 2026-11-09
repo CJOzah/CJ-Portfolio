@@ -330,7 +330,7 @@ class _ProjectCard extends StatelessWidget {
             border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            AspectRatio(aspectRatio: 4 / 3, child: MockupCover(app)),
+            AspectRatio(aspectRatio: 4 / 4, child: MockupCover(app)),
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -432,7 +432,7 @@ class _AppDetail extends StatelessWidget {
                     // Tall like the cards, but always leaving room for the text on short screens.
                     height: math.min(
                       math.min(820.0, MediaQuery.sizeOf(context).width) * 0.75,
-                      MediaQuery.sizeOf(context).height * 0.58,
+                      MediaQuery.sizeOf(context).height * 0.78,
                     ),
                     child: MockupCover(app),
                   ),

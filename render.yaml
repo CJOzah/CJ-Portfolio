@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: cj-portfolio
+    runtime: static
+    # Render has no Flutter preinstalled. Keep the version in step with .github/workflows/deploy.yml.
+    buildCommand: >-
+      rm -rf .flutter-sdk &&
+      git clone --depth 1 --branch 3.47.0 https://github.com/flutter/flutter.git .flutter-sdk &&
+      .flutter-sdk/bin/flutter pub get &&
+      .flutter-sdk/bin/flutter build web --release --no-web-resources-cdn
+    staticPublishPath: build/web
